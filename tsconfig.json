@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "sourceMap": true,
+    "declaration": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "importHelpers": true,
+    "target": "es5",
+    "allowSyntheticDefaultImports": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2015",
+      "dom"
+    ]
+  },
+  "files": [
+    "src/ajax.ts",
+    "src/api.ts",
+    "src/axios.ts",
+    "src/captcha-aliyun.ts",
+    "src/common.ts",
+    "src/config.ts",
+    "src/form.tsx",
+    "src/modal.tsx",
+    "src/next.tsx",
+    "src/react.ts",
+    "node_modules/next/types/global.d.ts"
+  ]
+}
+

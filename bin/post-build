@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+var package = require('../package.json');
+delete package.scripts;
+delete package.devDependencies;
+require('fs').writeFileSync(__dirname + '/../dist/package.json', JSON.stringify(package, null, 2));

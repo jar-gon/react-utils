@@ -1,0 +1,47 @@
+{
+  "name": "@billypon/react-utils",
+  "description": "Utils for react",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "rm -rf dist && tsc -p . --jsx react",
+    "postbuild": "bin/post-build",
+    "lint": "tslint -p ."
+  },
+  "devDependencies": {
+    "@billypon/react-decorator": "0.1.4",
+    "@billypon/react-template": "0.1.0",
+    "@billypon/rxjs-types": "0.1.0",
+    "@billypon/ts-types": "0.1.0",
+    "@types/axios": "0.14.0",
+    "@types/node": "12.11.7",
+    "@types/qs": "6.5.3",
+    "@types/react": "16.9.11",
+    "@types/react-dom": "16.9.3",
+    "antd": "3.24.3",
+    "axios": "0.19.0",
+    "axios-observable": "1.1.2",
+    "next": "9.1.1",
+    "qs": "6.9.0",
+    "react": "16.11.0",
+    "react-dom": "16.11.0",
+    "reflect-metadata": "0.1.13",
+    "rxjs": "6.5.3",
+    "tslint": "5.20.0",
+    "typescript": "3.6.4"
+  },
+  "peerDependencies": {
+    "@billypon/react-decorator": "*",
+    "@billypon/react-template": "*",
+    "@billypon/rxjs-types": "*",
+    "@billypon/ts-types": "*",
+    "antd": "*",
+    "axios": "*",
+    "axios-observable": "*",
+    "next": "*",
+    "qs": "*",
+    "react": "*",
+    "react-dom": "*",
+    "reflect-metadata": "*",
+    "rxjs": "*"
+  }
+}
