@@ -61,14 +61,16 @@ function getConfigLog({ method, url, baseURL }: AxiosRequestConfig): string {
 }
 
 function logServerErrorData(name: string, data: object, indent = 2): void {
-  let indentStr = indents[indent]
-  if (!indentStr) {
-    indentStr = Array.from({ length: indent }, () => ' ').join('')
-    indents[indent] = indentStr
+  if (!indents[indent]) {
+    indents[indent] = Array.from({ length: indent }, () => ' ').join('')
   }
-  console.error('-----')
-  console.error(`${ indentStr }${ name }:`)
-  console.error(JSON.stringify(data, null, indent).replace(/^/gm, indentStr))
+  console.error(
+    [
+      '-----',
+      `${ name }:`,
+      JSON.stringify(data, null, indent)
+    ].join('\n').replace(/^/gm, indents[indent])
+  )
 }
 
 function logServerError({ config, response }: AxiosError): void {
