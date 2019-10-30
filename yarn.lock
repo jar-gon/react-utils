@@ -824,13 +824,6 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@billypon/react-decorator@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@billypon/react-decorator/-/react-decorator-0.1.4.tgz#1cbf01de7d1886f4d91312cd67c820d70df6c2b7"
-  integrity sha512-vm5IjflFXqozUgql9GD/DcBRXepGXAtR6bk/+BOQ2ddqO4Nh76tjXFoWFURQ58ziPUnVIiErFvj7ZYT0cLE/2Q==
-  dependencies:
-    reflect-metadata "0.1.13"
-
 "@billypon/react-template@0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@billypon/react-template/-/react-template-0.1.0.tgz#a59ca56516faef1d9a86bc2d88161444a72037a5"
