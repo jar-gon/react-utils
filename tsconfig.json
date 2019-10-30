@@ -25,7 +25,6 @@
     "src/captcha-aliyun.ts",
     "src/common.ts",
     "src/config.ts",
-    "src/currency.ts",
     "src/form.tsx",
     "src/modal.tsx",
     "src/next.tsx",
