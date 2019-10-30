@@ -9,16 +9,27 @@ export function getQueryParams(): Dictionary<string> {
   return qs.parse(window.location.search.substr(1))
 }
 
-export function redirectToLogin(current?: string): void {
+export function getRedirectParam(): string {
   const { pathname, search } = window.location
-  const params = { redirect: pathname + search }
-  router.replace(`/login${ params.redirect !== current ? `?${ qs.stringify(params) }` : '' }`)
+  return pathname + search
 }
 
-export function redirectToLogout(current?: string): void {
-  const { pathname, search } = window.location
-  const params = { redirect: pathname + search }
-  router.replace(`/logout${ params.redirect !== current ? `?${ qs.stringify(params) }` : '' }`)
+export function redirectToLogin(current?: string, replace = false): void {
+  const redirect = getRedirectParam()
+  router.push(`/login${ redirect !== current ? `?${ qs.stringify({ redirect }) }` : '' }`)
+}
+
+export function replaceToLogin(current?: string): void {
+  redirectToLogin(current, true)
+}
+
+export function redirectToLogout(current?: string, replace = false): void {
+  const redirect = getRedirectParam()
+  router.push(`/logout${ redirect !== current ? `?${ qs.stringify({ redirect }) }` : '' }`)
+}
+
+export function replaceToLogout(current?: string): void {
+  redirectToLogout(current, true)
 }
 
 export const logPattern = !process.browser || !localStorage.log ? /^$/ : new RegExp(
