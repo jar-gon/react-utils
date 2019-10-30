@@ -22,7 +22,7 @@
     "src/ajax.ts",
     "src/api.ts",
     "src/axios.ts",
-    "src/captcha-aliyun.ts",
+    "src/captcha/aliyun.ts",
     "src/common.ts",
     "src/config.ts",
     "src/form.tsx",

@@ -1,6 +1,6 @@
 import { Dictionary } from '@billypon/ts-types'
 
-import { publicRuntimeConfig } from './config'
+import { publicRuntimeConfig } from '../config'
 
 declare const noCaptcha: any
 
