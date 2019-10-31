@@ -9,39 +9,45 @@ export function getQueryParams(): Dictionary<string> {
   return qs.parse(window.location.search.substr(1))
 }
 
-export function getRedirectParam(): string {
-  const { pathname, search } = window.location
-  return pathname + search
-}
-
 export function buildUrl({ origin = '', path, query, hash = ''}: { origin?: string; path: string; query?: Dictionary; hash?: string }): string {
   return `${ origin }${ path }${ query ? `?${ qs.stringify(query) }` : '' }${ hash ? `#${ hash }` : '' }`
 }
 
-export function redirectToLogin(current?: string, replace = false): void {
-  const redirect = getRedirectParam()
-  const url = buildUrl({
+export function getPathAndQuery(): string {
+  const { pathname, search } = window.location
+  return pathname + search
+}
+
+export function getLoginUrl(currentUrl?: string): string {
+  const redirectUrl = getPathAndQuery()
+  return buildUrl({
     path: '/login',
-    query: redirect !== current ? { redirect } : null,
+    query: redirectUrl !== currentUrl ? { redirect: redirectUrl } : null,
   })
-  router.push(url)
+}
+
+export function getLogoutUrl(currentUrl?: string): string {
+  const redirectUrl = getPathAndQuery()
+  return buildUrl({
+    path: '/logout',
+    query: redirectUrl !== currentUrl ? { redirect: redirectUrl } : null,
+  })
+}
+
+export function redirectToLogin(current?: string): void {
+  router.push(getLoginUrl(current))
 }
 
 export function replaceToLogin(current?: string): void {
-  redirectToLogin(current, true)
+  router.replace(getLoginUrl(current))
 }
 
-export function redirectToLogout(current?: string, replace = false): void {
-  const redirect = getRedirectParam()
-  const url = buildUrl({
-    path: '/logout',
-    query: redirect !== current ? { redirect } : null,
-  })
-  router.push(url)
+export function redirectToLogout(current?: string): void {
+  router.push(getLogoutUrl(current))
 }
 
 export function replaceToLogout(current?: string): void {
-  redirectToLogout(current, true)
+  router.replace(getLogoutUrl(current))
 }
 
 export const logPattern = !process.browser || !localStorage.log ? /^$/ : new RegExp(
