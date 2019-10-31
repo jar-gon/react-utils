@@ -14,9 +14,17 @@ export function getRedirectParam(): string {
   return pathname + search
 }
 
+export function buildUrl({ origin = '', path, query, hash = ''}: { origin?: string; path: string; query?: Dictionary; hash?: string }): string {
+  return `${ origin }${ path }${ query ? `?${ qs.stringify(query) }` : '' }${ hash ? `#${ hash }` : '' }`
+}
+
 export function redirectToLogin(current?: string, replace = false): void {
   const redirect = getRedirectParam()
-  router.push(`/login${ redirect !== current ? `?${ qs.stringify({ redirect }) }` : '' }`)
+  const url = buildUrl({
+    path: '/login',
+    query: redirect !== current ? { redirect } : null,
+  })
+  router.push(url)
 }
 
 export function replaceToLogin(current?: string): void {
@@ -25,7 +33,11 @@ export function replaceToLogin(current?: string): void {
 
 export function redirectToLogout(current?: string, replace = false): void {
   const redirect = getRedirectParam()
-  router.push(`/logout${ redirect !== current ? `?${ qs.stringify({ redirect }) }` : '' }`)
+  const url = buildUrl({
+    path: '/logout',
+    query: redirect !== current ? { redirect } : null,
+  })
+  router.push(url)
 }
 
 export function replaceToLogout(current?: string): void {
