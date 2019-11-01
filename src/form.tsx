@@ -26,7 +26,7 @@ export class FormComponent<P extends FormComponentProps = FormComponentProps, S 
 
   FormItem = ({ name, label, children }) => {
     return children && (
-      <Form.Item label={ label } validateStatus={ this.errors[name] && 'error' } help={ this.errors[name] }>
+      <Form.Item label={ label } validateStatus={ this.errors[name] && 'error' } help={ this.getItemHelp(name) }>
         { this.fields[name](children) }
       </Form.Item>
     )
@@ -48,6 +48,11 @@ export class FormComponent<P extends FormComponentProps = FormComponentProps, S 
         })
       }
     })
+  }
+
+  getItemHelp = (name: string): React.ReactNode => {
+    const errors = this.errors[name]
+    return errors && errors[0]
   }
 
   componentDidMount() {
