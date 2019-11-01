@@ -61,7 +61,8 @@ export class FormComponent<P extends FormComponentProps = FormComponentProps, S 
       }
     })
     this.inited = true
-    this.triggerUpdate().subscribe(() => this.formInit())
+    this.formInit()
+    this.triggerUpdate()
   }
 
   getFormFields(): Dictionary<GetFieldDecoratorOptions> {
