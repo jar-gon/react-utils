@@ -1,19 +1,14 @@
 import React from 'react'
 import Form, { FormComponentProps, ValidationRule } from 'antd/es/form'
-import { GetFieldDecoratorOptions } from 'antd/es/form/Form'
+import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form'
 import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
 
-export interface FormComponentState {
-  loading: boolean
-}
-
-export class FormComponent<P extends FormComponentProps = FormComponentProps, S extends FormComponentState = FormComponentState> extends Component<P, S> {
+export class FormX {
   fields: Dictionary<(node: React.ReactNode) => React.ReactNode> = { }
   errors: Dictionary<string[]> = { }
   validFns: Dictionary<() => void> = { }
-  inited: boolean
 
   FormX = ({ children, ...props }) => {
     return (
@@ -36,12 +31,14 @@ export class FormComponent<P extends FormComponentProps = FormComponentProps, S 
     return children && this.fields[name](children)
   }
 
-  handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    this.props.form.validateFields((err, values) => {
+  onSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
+    if (event) {
+      event.preventDefault()
+    }
+    this.form.validateFields((err, values) => {
       if (!err) {
         Object.keys(this.fields).forEach(id => this.errors[id] = null)
-        this.formSubmit(values)
+        this.submitCallback(values)
       } else {
         Object.keys(this.fields).forEach(id => {
           this.errors[id] = err[id] && err[id].errors.map(({ message }) => message)
@@ -55,9 +52,14 @@ export class FormComponent<P extends FormComponentProps = FormComponentProps, S 
     return errors && errors[0]
   }
 
-  componentDidMount() {
-    const { getFieldDecorator, validateFields } = this.props.form
-    Object.entries(this.getFormFields()).forEach(([ id, options ]) => {
+  constructor(
+    private form: WrappedFormUtils,
+    getFormFields: () => Dictionary<GetFieldDecoratorOptions>,
+    private submitCallback: (values: Dictionary) => void,
+    context?: object,
+  ) {
+    const { getFieldDecorator, validateFields } = form
+    Object.entries(getFormFields()).forEach(([ id, options ]) => {
       this.fields[id] = getFieldDecorator(id, options)
       this.validFns[id] = () => {
         validateFields([ id ], err => {
@@ -65,19 +67,41 @@ export class FormComponent<P extends FormComponentProps = FormComponentProps, S 
         })
       }
     })
+    if (context) {
+      [ 'fields', 'errors', 'validFns', 'FormX', 'FormItem', 'FormField', 'getItemHelp', 'onSubmit' ].forEach(x => context[x] = this[x])
+    }
+  }
+}
+
+export interface FormComponentState {
+  loading: boolean
+}
+
+export class FormComponent<P extends FormComponentProps = FormComponentProps, S extends FormComponentState = FormComponentState> extends Component<P, S> {
+  fields: Dictionary<(node: React.ReactNode) => React.ReactNode>
+  errors: Dictionary<string[]>
+  validFns: Dictionary<() => void>
+
+  onSubmit: (event?: React.FormEvent<HTMLFormElement>) => void
+  getItemHelp: (name: string) => React.ReactNode
+
+  inited: boolean
+
+  componentDidMount() {
+    new FormX(this.props.form, this.getFormFields, this.formSubmit, this)
     this.inited = true
     this.formInit()
     this.triggerUpdate()
   }
 
-  getFormFields(): Dictionary<GetFieldDecoratorOptions> {
+  protected getFormFields(): Dictionary<GetFieldDecoratorOptions> {
     return null
   }
 
-  formInit(): void {
+  protected formInit(): void {
   }
 
-  formSubmit(values: Dictionary): void {
+  protected formSubmit(values: Dictionary): void {
   }
 }
 
