@@ -1,9 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { NextComponentType } from 'next/dist/next-server/lib/utils'
 import { Observable, Subject } from 'rxjs'
 import Modal, { ModalProps } from 'antd/es/modal'
 import { ButtonProps } from 'antd/es/button'
 import Template from '@billypon/react-template'
+import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
 
@@ -16,13 +18,20 @@ export class ModalRenderError extends Error {
   }
 }
 
+interface ModalPropsX extends ModalProps {
+  content?: React.ReactNode | Template | NextComponentType
+  componentProps?: Dictionary
+}
+
+export { ModalPropsX as ModalProps }
+
 export default class ModalX<T = any> {
   private container: HTMLElement
   private createdContainer: HTMLElement
 
   afterClose: Subject<T> = new Subject<T>()
 
-  constructor(public props: ModalProps & { content: React.ReactNode | Template }) {
+  constructor(public props: ModalPropsX) {
     destroyFns.push(this.destroy)
     if (props.content instanceof Template) {
       const template = props.content as Template
@@ -95,7 +104,13 @@ export default class ModalX<T = any> {
     if (!this.container) {
       throw new ModalRenderError('modal have been closed')
     }
-    const content = this.props.content instanceof Template ? (this.props.content as Template).template : this.props.content
+    let content = this.props.content
+    if (content instanceof Template) {
+      content = (content as Template).template
+    } else if (!React.isValidElement(content)) {
+      const ContentComponent = content as any
+      content = <ContentComponent { ...this.props.componentProps } />
+    }
     const modal = (
       <Modal
         { ...this.props }
