@@ -1,5 +1,5 @@
 import React from 'react'
-import Form, { FormComponentProps } from 'antd/es/form'
+import Form, { FormComponentProps, ValidationRule } from 'antd/es/form'
 import { GetFieldDecoratorOptions } from 'antd/es/form/Form'
 import { Dictionary } from '@billypon/ts-types'
 
@@ -75,3 +75,5 @@ export class FormComponent<P extends FormComponentProps = FormComponentProps, S 
   formSubmit(values: Dictionary): void {
   }
 }
+
+export type ValidatorFn<T = any> = (rule: ValidationRule, value: T, callback: (err?: React.ReactNode | React.ReactNode[]) => void) => void
