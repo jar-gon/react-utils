@@ -25,3 +25,12 @@ export function withAuthentication(check: () => boolean) {
     }
   }
 }
+
+export function RedirectComponent(url: string) {
+  return () => {
+    if (browser) {
+      router.replace(url)
+    }
+    return null
+  }
+}
