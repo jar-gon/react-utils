@@ -18,12 +18,12 @@ export class ModalRenderError extends Error {
   }
 }
 
-interface ModalPropsX extends ModalProps {
+export interface ModalXProps extends ModalProps {
   content?: React.ReactNode | Template | NextComponentType
   componentProps?: Dictionary
 }
 
-export { ModalPropsX as ModalProps }
+export { ModalXProps as ModalProps }
 
 export default class ModalX<T = any> {
   private container: HTMLElement
@@ -31,7 +31,7 @@ export default class ModalX<T = any> {
 
   afterClose: Subject<T> = new Subject<T>()
 
-  constructor(public props: ModalPropsX) {
+  constructor(public props: ModalXProps) {
     destroyFns.push(this.destroy)
     if (props.content instanceof Template) {
       const template = props.content as Template
