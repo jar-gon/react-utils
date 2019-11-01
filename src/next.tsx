@@ -1,4 +1,5 @@
 import React from 'react'
+import router from 'next/router'
 import { NextComponentType } from 'next/dist/next-server/lib/utils'
 
 import { browser, redirectToLogin } from './common'

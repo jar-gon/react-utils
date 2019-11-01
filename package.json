@@ -1,7 +1,7 @@
 {
   "name": "@billypon/react-utils",
   "description": "Utils for react",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "scripts": {
     "build": "rm -rf dist && tsc -p . --jsx react",
     "postbuild": "bin/post-build",
