@@ -3,11 +3,14 @@ import ReactDOM from 'react-dom'
 import { NextComponentType } from 'next/dist/next-server/lib/utils'
 import { Observable, Subject } from 'rxjs'
 import Modal, { ModalProps } from 'antd/es/modal'
+import { FormComponentProps } from 'antd/es/form'
+import { GetFieldDecoratorOptions } from 'antd/es/form/Form'
 import { ButtonProps } from 'antd/es/button'
 import Template from '@billypon/react-template'
 import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
+import { FormX, FormComponentState } from './form'
 
 const destroyFns: Function[] = [ ]
 
@@ -105,7 +108,9 @@ export default class ModalX<T = any> {
       throw new ModalRenderError('modal have been closed')
     }
     let content = this.props.content
-    if (content instanceof Template) {
+    if (!content) {
+      return
+    } else if (content instanceof Template) {
       content = (content as Template).template
     } else if (!React.isValidElement(content)) {
       const ContentComponent = content as any
@@ -135,19 +140,27 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
   constructor(props) {
     super(props)
     this.modal = props.modal
-    this.beforeOpen()
-    props.modal.open()
-  }
 
-  protected beforeOpen(): void {
+    const modalProps = this.modal.props
+
+    const okProps = this.getOkButtonProps()
+    modalProps.okButtonProps = okProps
+    modalProps.okText = okProps.children
+    modalProps.onOk = okProps.onClick
+
+    const cancelProps = this.getCancelButtonProps()
+    modalProps.cancelButtonProps = cancelProps
+    modalProps.cancelText = cancelProps.children
+    modalProps.onCancel = cancelProps.onClick
+
+    this.modal.update()
   }
 
   protected getOkButtonProps(): ButtonProps {
-    const { okButtonProps } = this.modal.props
     return {
       children: '确定',
       type: 'primary',
-      onClick: () => !okButtonProps.loading ? this.close() : 0,
+      onClick: () => !this.modal.props.okButtonProps.loading ? this.close() : 0,
     }
   }
 
@@ -170,5 +183,55 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
 
   protected onClose(state?: object): Observable<any> {
     return null
+  }
+}
+
+export class FormModalComponent<P extends FormComponentProps = FormComponentProps, S extends FormComponentState = FormComponentState> extends ModalComponent<P, S> {
+  fields: Dictionary<(node: React.ReactNode) => React.ReactNode>
+  errors: Dictionary<string[]>
+  validFns: Dictionary<() => void>
+
+  onSubmit: () => void
+  getItemHelp: (name: string) => React.ReactNode
+
+  inited: boolean
+
+  componentDidMount() {
+    new FormX(this.props.form, this.getFormFields, this.formSubmit.bind(this), this)
+    this.inited = true
+    this.formInit()
+    this.triggerUpdate()
+  }
+
+  protected getFormFields(): Dictionary<GetFieldDecoratorOptions> {
+    return null
+  }
+
+  protected formInit(): void {
+  }
+
+  protected close() {
+    this.onSubmit()
+  }
+
+  protected formSubmit(values: Dictionary): void {
+    if (this.state.loading) {
+      return;
+    }
+    const observable = this.onClose(values);
+    if (this.modal.props.okButtonProps.loading) {
+      this.setState({ loading: true })
+      observable.subscribe(
+        () => {
+          this.modal.close();
+        },
+        () => {
+          this.setOkButtonLoading(false)
+          this.setState({ loading: false })
+        },
+      );
+    } else {
+      this.modal.close(observable);
+    }
   }
 }
