@@ -191,7 +191,7 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
   errors: Dictionary<string[]>
   validFns: Dictionary<() => void>
 
-  onSubmit: () => void
+  submitForm: () => void
   getItemHelp: (name: string) => React.ReactNode
 
   inited: boolean
@@ -211,7 +211,7 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
   }
 
   protected close() {
-    this.onSubmit()
+    this.submitForm()
   }
 
   protected formSubmit(values: Dictionary): void {

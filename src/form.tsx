@@ -31,8 +31,8 @@ export class FormX {
     return children && this.fields[name](children)
   }
 
-  onSubmit = (event?: React.FormEvent<HTMLFormElement>) => {
-    if (event) {
+  submitForm = (event?: React.SyntheticEvent<HTMLElement>) => {
+    if (event && event.type === 'submit') {
       event.preventDefault()
     }
     this.form.validateFields((err, values) => {
@@ -68,7 +68,7 @@ export class FormX {
       }
     })
     if (context) {
-      [ 'fields', 'errors', 'validFns', 'FormX', 'FormItem', 'FormField', 'getItemHelp', 'onSubmit' ].forEach(x => context[x] = this[x])
+      [ 'fields', 'errors', 'validFns', 'submitForm', 'getItemHelp', 'FormX', 'FormItem', 'FormField' ].forEach(x => context[x] = this[x])
     }
   }
 }
@@ -82,7 +82,7 @@ export class FormComponent<P extends FormComponentProps = FormComponentProps, S 
   errors: Dictionary<string[]>
   validFns: Dictionary<() => void>
 
-  onSubmit: (event?: React.FormEvent<HTMLFormElement>) => void
+  submitForm: (event?: React.SyntheticEvent<HTMLElement>) => void
   getItemHelp: (name: string) => React.ReactNode
 
   inited: boolean
