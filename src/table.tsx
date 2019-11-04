@@ -11,14 +11,13 @@ function getTableX<T = any>(getPagination?: () => PaginationProps) {
     if (props.columns) {
       Object.entries(props).forEach(([ key, value ]) => {
         if (key.startsWith('column-')) {
-          const dataIndex = key.substr(7)
-          const render = typeof value === 'string' ? () => value : value
-          let index = parseInt(dataIndex, 10)
+          key = key.substr(7)
+          let index = parseInt(key, 10)
           if (Number.isNaN(index)) {
-            index = props.columns.findIndex((column) => column.dataIndex === dataIndex)
+            index = props.columns.findIndex((column) => column.key === key)
           }
           if (index >= 0) {
-            props.columns[index].render = render
+            props.columns[index].render = typeof value === 'string' ? () => value : value
           }
         }
       })
