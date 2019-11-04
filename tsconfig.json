@@ -30,6 +30,7 @@
     "src/modal.tsx",
     "src/next.tsx",
     "src/react.ts",
+    "src/table.tsx",
     "node_modules/next/types/global.d.ts"
   ]
 }
