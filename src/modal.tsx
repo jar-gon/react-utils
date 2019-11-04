@@ -192,7 +192,7 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
   validFns: Dictionary<() => void>
 
   submitForm: () => void
-  getItemHelp: (name: string) => React.ReactNode
+  protected getItemHelp: (name: string) => React.ReactNode
 
   inited: boolean
 

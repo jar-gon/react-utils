@@ -10,7 +10,7 @@ export class FormX {
   errors: Dictionary<string[]> = { }
   validFns: Dictionary<() => void> = { }
 
-  FormX = ({ children, ...props }) => {
+  private FormX = ({ children, ...props }) => {
     return (
       <Form { ...props }>
         { children }
@@ -19,7 +19,7 @@ export class FormX {
     )
   }
 
-  FormItem = ({ name, label, children }) => {
+  private FormItem = ({ name, label, children }) => {
     return children && (
       <Form.Item label={ label } validateStatus={ this.errors[name] && 'error' } help={ this.getItemHelp(name) }>
         { this.fields[name](children) }
@@ -27,11 +27,11 @@ export class FormX {
     )
   }
 
-  FormField = ({ name, children }) => {
+  private FormField = ({ name, children }) => {
     return children && this.fields[name](children)
   }
 
-  submitForm = (event?: React.SyntheticEvent<HTMLElement>) => {
+  private submitForm = (event?: React.SyntheticEvent<HTMLElement>) => {
     if (event && event.type === 'submit') {
       event.preventDefault()
     }
@@ -47,7 +47,7 @@ export class FormX {
     })
   }
 
-  getItemHelp = (name: string): React.ReactNode => {
+  private getItemHelp = (name: string): React.ReactNode => {
     const errors = this.errors[name]
     return errors && errors[0]
   }
@@ -83,7 +83,7 @@ export class FormComponent<P extends FormComponentProps = FormComponentProps, S 
   validFns: Dictionary<() => void>
 
   submitForm: (event?: React.SyntheticEvent<HTMLElement>) => void
-  getItemHelp: (name: string) => React.ReactNode
+  protected getItemHelp: (name: string) => React.ReactNode
 
   inited: boolean
 
