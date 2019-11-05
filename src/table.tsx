@@ -6,33 +6,30 @@ import { map } from 'rxjs/operators'
 
 import { Component } from './react'
 
-function getTableX<T = any>(getPagination?: () => PaginationProps) {
-  return function (props: TableProps<T>, getPagination?: () => PaginationProps) {
-    if (props.columns) {
-      Object.entries(props).forEach(([ key, value ]) => {
-        if (key.startsWith('column-')) {
-          key = key.substr(7)
-          let index = parseInt(key, 10)
-          if (Number.isNaN(index)) {
-            index = props.columns.findIndex((column) => column.key === key)
-          }
-          if (index >= 0) {
-            props.columns[index].render = typeof value === 'string' ? () => value : value
-          }
+export function TableX(props: TableProps<any>) {
+  if (props.columns) {
+    Object.entries(props).forEach(([ key, value ]) => {
+      if (key.startsWith('column-')) {
+        key = key.substr(7)
+        let index = parseInt(key, 10)
+        if (Number.isNaN(index)) {
+          index = props.columns.findIndex((column) => column.key === key)
         }
-      })
-    }
-    const pagination = this.getPagination ? this.getPagination() : null
-    return (
-      <Table
-        { ...props }
-        dataSource={ props.dataSource || this.state.items }
-        loading={ !(props.dataSource || this.state.items) }
-        rowKey={ props.rowKey || (x => (x as any).id) }
-        pagination={ pagination }
-      />
-    )
+        if (index >= 0) {
+          props.columns[index].render = typeof value === 'string' ? () => value : value
+        }
+      }
+    })
   }
+
+  return (
+    <Table
+      { ...props }
+      rowKey={ props.rowKey || (x => (x as any).id) }
+    >
+      { props.children }
+    </Table>
+  )
 }
 
 export interface ListState<T = any> {
@@ -45,7 +42,29 @@ export abstract class TableComponent<P = { }, S extends ListState = ListState, T
   pageSize = 10
   totalCount = 0
 
-  private TableX = getTableX<T>(this.getPagination.bind(this)).bind(this)
+  private TableX = (props: TableProps<T>) => {
+    const dataSource = props.dataSource || this.state.items
+    const pagination: PaginationProps = {
+      current: this.pageNumber,
+      pageSize: this.pageSize,
+      total: this.totalCount,
+      onChange: this.changePage,
+    }
+    return (
+      <TableX
+        dataSource={ dataSource }
+        loading={ !dataSource }
+        pagination = { pagination }
+      >
+        { props.children }
+      </TableX>
+    )
+  }
+
+  private changePage = (page: number) => {
+    this.pageNumber = page
+    this.loadItems()
+  }
 
   componentDidMount() {
     this.loadItems()
@@ -57,18 +76,4 @@ export abstract class TableComponent<P = { }, S extends ListState = ListState, T
   }
 
   protected abstract onLoadItems(): Observable<T[]>
-
-  protected getPagination(): PaginationProps {
-    return {
-      current: this.pageNumber,
-      pageSize: this.pageSize,
-      total: this.totalCount,
-      onChange: this.changePage.bind(this),
-    }
-  }
-
-  protected changePage(page: number): void {
-    this.pageNumber = page
-    this.loadItems()
-  }
 }
