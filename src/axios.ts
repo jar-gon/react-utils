@@ -9,7 +9,7 @@ const infoLog = console.info
 const warnLog = console.warn
 const errorLog = console.error
 
-const indents = { 2: '  ' }
+const indents = { 2: '  ', 4: '    ' }
 
 function logConfig(config: AxiosRequestConfig, logger = debugLog): void {
   const { url, method, data, params, headers } = config
@@ -60,23 +60,23 @@ function getConfigLog({ method, url, baseURL }: AxiosRequestConfig): string {
   return `${ method.toUpperCase() } ${ (baseURL && url.substr(0, baseURL.length) !== baseURL ? baseURL : '') + url }`
 }
 
-function logServerErrorData(name: string, data: object, indent = 2): void {
+function logServerErrorData(name: string, data: object, indent = 4, first = false): void {
   if (!indents[indent]) {
     indents[indent] = Array.from({ length: indent }, () => ' ').join('')
   }
   console.error(
     [
-      '-----',
+      !first ? '----------' : null,
       `${ name }:`,
       JSON.stringify(data, null, indent)
-    ].join('\n').replace(/^/gm, indents[indent])
+    ].filter(Boolean).join('\n').replace(/^/gm, indents[indent])
   )
 }
 
 function logServerError({ config, response }: AxiosError): void {
   const { url, method, data, params, headers } = config
   console.error(`[${ (new Date).toLocaleString() }] ${ method.toUpperCase() } ${ url }`)
-  logServerErrorData('headers', headers)
+  logServerErrorData('headers', headers, undefined, true)
   if (params) {
     logServerErrorData('params', params)
   }
@@ -86,6 +86,7 @@ function logServerError({ config, response }: AxiosError): void {
   if (response) {
     logServerErrorData('response', response.data)
   }
+  console.error()
 }
 
 function useInterceptors(axios: Axios): void {
