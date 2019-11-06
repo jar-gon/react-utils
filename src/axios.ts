@@ -1,149 +1,49 @@
 import Axios from 'axios-observable'
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
+import pino from 'pino'
 
-import { browser, logPattern } from './common'
+import { browser } from './common'
 import { publicRuntimeConfig } from './config'
 
-const debugLog = console.log
-const infoLog = console.info
-const warnLog = console.warn
-const errorLog = console.error
+const logger = pino({
+  name: 'axios',
+  level: browser ? localStorage.log || 'silent' : 'error',
+  prettyPrint: {
+    translateTime: 'SYS:yyyy-mm-dd HH:MM:ss.l',
+  },
+})
 
-const indents = { 2: '  ', 4: '    ' }
-
-function logConfig(config: AxiosRequestConfig, logger = debugLog): void {
-  const { url, method, data, params, headers } = config
-  if (url) {
-    logger('url:', url)
-  }
-  if (method) {
-    logger('method:', method)
-  }
-  if (data) {
-    logger('data:', data)
-  }
-  if (params) {
-    logger('params:', params)
-  }
-  if (headers) {
-    logger('headers:', headers)
-  }
-}
-
-function logResponse(response: AxiosResponse, logger = debugLog): void {
-  const { status, statusText, data, headers } = response
-  if (status) {
-    logger('status:', status)
-  }
-  if (statusText) {
-    logger('statusText:', statusText)
-  }
-  if (data) {
-    logger('data:', data)
-  }
-  if (headers) {
-    logger('headers:', headers)
-  }
-}
-
-function logError(error: AxiosError): void {
-  const { name, message } = error
-  if (name) {
-    errorLog('name:', name)
-  }
-  if (message) {
-    errorLog('message:', message)
-  }
-}
-
-function getConfigLog({ method, url, baseURL }: AxiosRequestConfig): string {
+function getLogMsg({ method, url, baseURL }: AxiosRequestConfig): string {
   return `${ method.toUpperCase() } ${ (baseURL && url.substr(0, baseURL.length) !== baseURL ? baseURL : '') + url }`
 }
 
-function logServerErrorData(name: string, data: object, indent = 4, first = false): void {
-  if (!indents[indent]) {
-    indents[indent] = Array.from({ length: indent }, () => ' ').join('')
-  }
-  console.error(
-    [
-      !first ? '----------' : null,
-      `${ name }:`,
-      JSON.stringify(data, null, indent)
-    ].filter(Boolean).join('\n').replace(/^/gm, indents[indent])
-  )
+function getConfigMsg({ url, method, params, data, headers }: AxiosRequestConfig) {
+  return { url, method, params, data, headers }
 }
 
-function logServerError({ config, response }: AxiosError): void {
-  const { url, method, data, params, headers } = config
-  console.error(`[${ (new Date).toLocaleString() }] ${ method.toUpperCase() } ${ url }`)
-  logServerErrorData('headers', headers, undefined, true)
-  if (params) {
-    logServerErrorData('params', params)
+function getResponseMsg(response: AxiosResponse) {
+  if (!response) {
+    return null
   }
-  if (data) {
-    logServerErrorData('data', data)
-  }
-  if (response) {
-    logServerErrorData('response', response.data)
-  }
-  console.error()
+  const { data, status, statusText, headers } = response
+  return { data, status, statusText, headers }
 }
 
 function useInterceptors(axios: Axios): void {
   axios.interceptors.request.use(config => {
-    const log = `[debug] ${ getConfigLog(config) }`
-    if (browser && logPattern.test(log)) {
-      console.groupCollapsed(log)
-      logConfig(config)
-      console.groupEnd()
-    }
+    logger.debug(getConfigMsg(config), getLogMsg(config))
     return config
-  }, error => {
-    const { config } = error
-    const log = `[fatal] ${ getConfigLog(config) }`
-    if (browser && logPattern.test(log)) {
-      console.group(log)
-      debugLog(error)
-      console.groupEnd()
-    } else if (!browser) {
-      logServerError(error)
-    }
+  }, ({ config }) => {
+    logger.error(getConfigMsg(config), getLogMsg(config))
     return Promise.reject(null)
   })
 
   axios.interceptors.response.use(response => {
     const { config } = response
-    const log = `[info] ${ getConfigLog(config) }`
-    if (browser && logPattern.test(log)) {
-      console.groupCollapsed(log)
-      logResponse(response, infoLog)
-        // config
-        console.groupCollapsed('config')
-        logConfig(response.config, infoLog)
-        console.groupEnd()
-      console.groupEnd()
-    }
+    logger.info({ response: getResponseMsg(response), config: getConfigMsg(config) }, getLogMsg(config))
     return response
-  }, error => {
-    const { config, response } = error
-    const log = `[error] ${ getConfigLog(config) }`
-    if (browser && logPattern.test(log)) {
-      console.group(log)
-      // logError(error)
-        // response
-        if (error.response) {
-          console.group('response')
-          logResponse(error.response, errorLog)
-          console.groupEnd()
-        }
-        // config
-        console.groupCollapsed('config')
-        logConfig(error.config)
-        console.groupEnd()
-      console.groupEnd()
-    } else if (!browser) {
-      logServerError(error)
-    }
+  }, ({ config, response }) => {
+    logger.error({ response: getResponseMsg(response), config: getConfigMsg(config) }, getLogMsg(config))
     return Promise.reject(response && response.data)
   })
 }

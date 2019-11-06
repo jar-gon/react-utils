@@ -49,10 +49,3 @@ export function redirectToLogout(current?: string): void {
 export function replaceToLogout(current?: string): void {
   router.replace(getLogoutUrl(current))
 }
-
-export const logPattern = !process.browser || !localStorage.log ? /^$/ : new RegExp(
-  localStorage.log
-    .replace(/\*/g, '.*')
-    .replace(/\[/g, '\\[')
-    .replace(/\]/g, '\\]')
-)
