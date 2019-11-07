@@ -25,7 +25,6 @@ export function TableX(props: TableProps<any>) {
   return (
     <Table
       { ...props }
-      rowKey={ props.rowKey || (x => (x as any).id) }
     >
       { props.children }
     </Table>
@@ -52,6 +51,7 @@ export abstract class TableComponent<P = { }, S extends ListState = ListState, T
     }
     return (
       <TableX
+        { ...props }
         dataSource={ dataSource }
         loading={ !dataSource }
         pagination = { pagination }
