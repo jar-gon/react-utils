@@ -29,7 +29,7 @@ export function TableX(props: TableProps<any>) {
         let colIndex = parseInt(indexOrKey, 10)
         colIndex = !Number.isNaN(colIndex) ? colIndex : columns.findIndex((column) => column.key === indexOrKey)
         const column = columns[colIndex]
-        if (column) {
+        if (column && !(column as any)._overridden) {
           renders[colIndex] = renders[colIndex] || { props: { } }
           column.render = (text, record, index) => {
             const { render, props } = renders[colIndex] || { }
@@ -38,6 +38,7 @@ export function TableX(props: TableProps<any>) {
               props,
             }
           }
+          (column as any)._overridden = true
           if (!prop || prop === 'render') {
             renders[colIndex].render = value
           } else {
