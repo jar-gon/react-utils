@@ -1,9 +1,8 @@
 import Axios from 'axios-observable'
-import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
+import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import pino from 'pino'
 
 import { browser } from './common'
-import { publicRuntimeConfig } from './config'
 
 const logger = pino({
   name: 'axios',
