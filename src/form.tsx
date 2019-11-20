@@ -8,7 +8,7 @@ import { Component } from './react'
 export class FormX {
   fields: Dictionary<(node: React.ReactNode) => React.ReactNode> = { }
   errors: Dictionary<string[]> = { }
-  validFns: Dictionary<() => void> = { }
+  validFns: Dictionary<(state?: any) => void> = { }
 
   private FormX = ({ children, ...props }) => {
     return (
@@ -52,6 +52,13 @@ export class FormX {
     return errors && errors[0]
   }
 
+  private setSelectValidFn(...fields: string[]): void {
+    fields.forEach(x => {
+      const fn = this.validFns[x]
+      this.validFns[x] = (open: boolean) => !open && fn()
+    })
+  }
+
   constructor(
     private form: WrappedFormUtils,
     getFormFields: () => Dictionary<GetFieldDecoratorOptions>,
@@ -68,7 +75,7 @@ export class FormX {
       }
     })
     if (context) {
-      [ 'fields', 'errors', 'validFns', 'submitForm', 'getItemHelp', 'FormX', 'FormItem', 'FormField' ].forEach(x => context[x] = this[x])
+      [ 'fields', 'errors', 'validFns', 'submitForm', 'getItemHelp', 'setSelectValidFn', 'FormX', 'FormItem', 'FormField' ].forEach(x => context[x] = this[x])
     }
   }
 }
@@ -88,6 +95,7 @@ export class FormComponent<P extends OriginFormComponentProps = OriginFormCompon
 
   submitForm: (event?: React.SyntheticEvent<HTMLElement>) => void
   protected getItemHelp: (name: string) => React.ReactNode
+  protected setSelectValidFn: (...fields: string[]) => void
 
   constructor(props) {
     super(props)

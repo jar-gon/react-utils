@@ -105,20 +105,23 @@ class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormC
         onChange: (event: React.ChangeEvent<HTMLFormType>) => afterChange.next(event.target.value),
       }
 
-      const selectAddition: SelectAddition = addition || { };
-      if (selectAddition.dataFrom) {
-        if (typeof selectAddition.dataFrom === 'string') {
-          axios.get(selectAddition.dataFrom).pipe(parseResponse).subscribe((items: SelectDataOption[]) => selectAddition.data = items);
-        } else if (selectAddition.dataFrom instanceof Observable) {
-          selectAddition.dataFrom.subscribe(items => selectAddition.data = items);
-        } else if ([ 'query', 'param' ].every(name => !selectAddition.dataFrom[name])) {
-          this.loadSelectData(selectAddition);
-        } else {
-          [ 'query', 'param' ].forEach(name => {
-            if (selectAddition.dataFrom[name]) {
-              this.initSelect(selectAddition, name);
-            }
-          });
+      if (type === 'select') {
+        this.setSelectValidFn(name)
+        const selectAddition: SelectAddition = addition || { };
+        if (selectAddition.dataFrom) {
+          if (typeof selectAddition.dataFrom === 'string') {
+            axios.get(selectAddition.dataFrom).pipe(parseResponse).subscribe((items: SelectDataOption[]) => selectAddition.data = items);
+          } else if (selectAddition.dataFrom instanceof Observable) {
+            selectAddition.dataFrom.subscribe(items => selectAddition.data = items);
+          } else if ([ 'query', 'param' ].every(name => !selectAddition.dataFrom[name])) {
+            this.loadSelectData(selectAddition);
+          } else {
+            [ 'query', 'param' ].forEach(name => {
+              if (selectAddition.dataFrom[name]) {
+                this.initSelect(selectAddition, name);
+              }
+            });
+          }
         }
       }
     })
@@ -276,13 +279,12 @@ class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormC
   protected renderSelect(props: FormItemRenderProps): React.ReactNode {
     const { field, addition, validate } = props
     const selectAddition = addition as SelectAddition
-    const onDropdownVisibleChange = (open: boolean) => !open && validate()
     return (
       <Select
         placeholder={ field.placeholder }
         size={ addition.size }
         allowClear={ selectAddition.allowClear }
-        onDropdownVisibleChange={ onDropdownVisibleChange }
+        onDropdownVisibleChange={ validate }
       >
         {
           selectAddition.data && selectAddition.data.map(option => {
