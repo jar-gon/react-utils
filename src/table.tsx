@@ -2,7 +2,6 @@ import React from 'react'
 import Table, { TableProps, ColumnProps } from 'antd/es/table'
 import { PaginationProps } from 'antd/es/pagination'
 import { Observable } from 'rxjs'
-import { map } from 'rxjs/operators'
 import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
