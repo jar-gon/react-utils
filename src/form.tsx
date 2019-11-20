@@ -1,5 +1,5 @@
 import React from 'react'
-import Form, { FormComponentProps, ValidationRule } from 'antd/es/form'
+import Form, { FormComponentProps as OriginFormComponentProps, ValidationRule } from 'antd/es/form'
 import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form'
 import { Dictionary } from '@billypon/ts-types'
 
@@ -19,9 +19,9 @@ export class FormX {
     )
   }
 
-  private FormItem = ({ name, label, children }) => {
+  private FormItem = ({ name, label, help, extra, children }) => {
     return children && (
-      <Form.Item label={ label } validateStatus={ this.errors[name] && 'error' } help={ this.getItemHelp(name) }>
+      <Form.Item label={ label } validateStatus={ this.errors[name] && 'error' } help={ help ? help() : this.getItemHelp(name) } extra={ extra && extra() }>
         { this.fields[name](children) }
       </Form.Item>
     )
@@ -73,6 +73,10 @@ export class FormX {
   }
 }
 
+export interface FormComponentProps extends OriginFormComponentProps {
+  lazyInit: boolean
+}
+
 export interface FormComponentState {
   loading: boolean
 }
@@ -85,13 +89,25 @@ export class FormComponent<P extends FormComponentProps = FormComponentProps, S 
   submitForm: (event?: React.SyntheticEvent<HTMLElement>) => void
   protected getItemHelp: (name: string) => React.ReactNode
 
-  inited: boolean
+  constructor(props) {
+    super(props)
+    if (!props.lazyInit) {
+      this.createForm()
+    }
+  }
 
   componentDidMount() {
-    new FormX(this.props.form, this.getFormFields, this.formSubmit, this)
-    this.inited = true
+    if (this.props.lazyInit) {
+      this.createForm()
+      this.triggerUpdate()
+    }
     this.formInit()
-    this.triggerUpdate()
+  }
+
+  protected createForm(): void {
+    const getFormFields = () => this.getFormFields()
+    const formSubmit = values => this.formSubmit(values)
+    new FormX(this.props.form, getFormFields, formSubmit, this)
   }
 
   protected getFormFields(): Dictionary<GetFieldDecoratorOptions> {

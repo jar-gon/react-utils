@@ -26,6 +26,7 @@
     "src/common.ts",
     "src/config.ts",
     "src/form.tsx",
+    "src/form-component.tsx",
     "src/form/validators",
     "src/modal.tsx",
     "src/next.tsx",

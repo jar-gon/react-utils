@@ -3,14 +3,13 @@ import ReactDOM from 'react-dom'
 import { NextComponentType } from 'next/dist/next-server/lib/utils'
 import { Observable, Subject } from 'rxjs'
 import Modal, { ModalProps } from 'antd/es/modal'
-import { FormComponentProps } from 'antd/es/form'
 import { GetFieldDecoratorOptions } from 'antd/es/form/Form'
 import { ButtonProps } from 'antd/es/button'
 import Template from '@billypon/react-template'
 import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
-import { FormX, FormComponentState } from './form'
+import { FormX, FormComponentProps, FormComponentState } from './form'
 
 const destroyFns: Function[] = [ ]
 
@@ -194,13 +193,25 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
   submitForm: () => void
   protected getItemHelp: (name: string) => React.ReactNode
 
-  inited: boolean
+  constructor(props) {
+    super(props)
+    if (!props.lazyInit) {
+      this.createForm()
+    }
+  }
 
   componentDidMount() {
-    new FormX(this.props.form, this.getFormFields, this.formSubmit.bind(this), this)
-    this.inited = true
+    if (this.props.lazyInit) {
+      this.createForm()
+      this.triggerUpdate()
+    }
     this.formInit()
-    this.triggerUpdate()
+  }
+
+  protected createForm(): void {
+    const getFormFields = () => this.getFormFields()
+    const formSubmit = values => this.formSubmit(values)
+    new FormX(this.props.form, getFormFields, formSubmit, this)
   }
 
   protected getFormFields(): Dictionary<GetFieldDecoratorOptions> {
@@ -208,10 +219,6 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
   }
 
   protected formInit(): void {
-  }
-
-  protected close() {
-    this.submitForm()
   }
 
   protected formSubmit(values: Dictionary): void {
@@ -233,5 +240,9 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
     } else {
       this.modal.close(observable);
     }
+  }
+
+  protected close() {
+    this.submitForm()
   }
 }
