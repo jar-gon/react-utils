@@ -5,6 +5,14 @@ import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
 
+export interface FormItemProps {
+  name: string
+  label: string
+  help: React.ReactNode | (() => React.ReactNode)
+  extra: React.ReactNode | (() => React.ReactNode)
+  children: React.ReactNode
+}
+
 export class FormX {
   fields: Dictionary<(node: React.ReactNode) => React.ReactNode> = { }
   errors: Dictionary<string[]> = { }
@@ -19,9 +27,17 @@ export class FormX {
     )
   }
 
-  private FormItem = ({ name, label, help, extra, children }) => {
+  private FormItem = ({ name, label, help, extra, children }: FormItemProps) => {
+    if (!help) {
+      help = this.getItemHelp(name)
+    } else if (typeof help === 'function') {
+      help = help()
+    }
+    if (typeof extra === 'function') {
+      extra = extra()
+    }
     return children && (
-      <Form.Item label={ label } validateStatus={ this.errors[name] && 'error' } help={ help ? help() : this.getItemHelp(name) } extra={ extra && extra() }>
+      <Form.Item label={ label } validateStatus={ this.errors[name] && 'error' } help={ help } extra={ extra }>
         { this.fields[name](children) }
       </Form.Item>
     )
