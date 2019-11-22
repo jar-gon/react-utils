@@ -155,4 +155,6 @@ export class FormComponent<P extends OriginFormComponentProps = OriginFormCompon
   }
 }
 
-export type ValidatorFn<T = any> = (rule: ValidationRule, value: T, callback: (err?: React.ReactNode | React.ReactNode[]) => void) => void
+export type ValidatorFn<T = any> = (rule: ValidationRule, value: T, callback: ValidationCallback) => void
+
+export type ValidationCallback = (err?: React.ReactNode | React.ReactNode[]) => void
