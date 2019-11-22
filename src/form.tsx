@@ -71,7 +71,16 @@ export class FormX {
   private setSelectValidFn(...fields: string[]): void {
     fields.forEach(x => {
       const fn = this.validFns[x]
-      this.validFns[x] = (open: boolean) => !open && fn()
+      this.validFns[`${ x }_dropdown`] = (open: boolean) => {
+        if (!open) {
+          setTimeout(() => {
+            fn()
+            if (this.triggerUpdate) {
+              this.triggerUpdate()
+            }
+          })
+        }
+      }
     })
   }
 
@@ -80,6 +89,7 @@ export class FormX {
     getFormFields: () => Dictionary<GetFieldDecoratorOptions>,
     private submitCallback: (values: Dictionary) => void,
     context?: object,
+    private triggerUpdate?: () => void,
   ) {
     const { getFieldDecorator, validateFields } = form
     Object.entries(getFormFields()).forEach(([ id, options ]) => {
@@ -131,7 +141,7 @@ export class FormComponent<P extends OriginFormComponentProps = OriginFormCompon
   protected createForm(): void {
     const getFormFields = () => this.getFormFields()
     const formSubmit = values => this.formSubmit(values)
-    new FormX(this.props.form, getFormFields, formSubmit, this)
+    new FormX(this.props.form, getFormFields, formSubmit, this, this.triggerUpdate.bind(this))
   }
 
   protected getFormFields(): Dictionary<GetFieldDecoratorOptions> {

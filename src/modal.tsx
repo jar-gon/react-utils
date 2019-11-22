@@ -211,7 +211,7 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
   protected createForm(): void {
     const getFormFields = () => this.getFormFields()
     const formSubmit = values => this.formSubmit(values)
-    new FormX(this.props.form, getFormFields, formSubmit, this)
+    new FormX(this.props.form, getFormFields, formSubmit, this, this.triggerUpdate.bind(this))
   }
 
   protected getFormFields(): Dictionary<GetFieldDecoratorOptions> {
