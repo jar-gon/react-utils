@@ -4,12 +4,15 @@ import { NextComponentType } from 'next/dist/next-server/lib/utils'
 import { Observable, Subject } from 'rxjs'
 import Modal, { ModalProps } from 'antd/es/modal'
 import { GetFieldDecoratorOptions } from 'antd/es/form/Form'
+import { TableProps } from 'antd/es/table'
+import { PaginationProps } from 'antd/es/pagination'
 import { ButtonProps } from 'antd/es/button'
 import Template from '@billypon/react-template'
 import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
 import { FormX, FormComponentProps, FormComponentState } from './form'
+import { ListState, TableX } from './table'
 
 const destroyFns: Function[] = [ ]
 
@@ -245,4 +248,46 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
   protected close() {
     this.submitForm()
   }
+}
+
+export abstract class TableModalComponent<P = { }, S extends ListState = ListState, T = any> extends ModalComponent<P, S> {
+  pageNumber = 1
+  pageSize = 10
+  totalCount = 0
+
+  private TableX = (props: TableProps<T>) => {
+    const dataSource = props.dataSource || this.state.items
+    const pagination: PaginationProps = {
+      current: this.pageNumber,
+      pageSize: this.pageSize,
+      total: this.totalCount,
+      onChange: this.changePage,
+    }
+    return (
+      <TableX
+        { ...props }
+        dataSource={ dataSource }
+        loading={ !dataSource }
+        pagination = { pagination }
+      >
+        { props.children }
+      </TableX>
+    )
+  }
+
+  private changePage = (page: number) => {
+    this.pageNumber = page
+    this.loadItems()
+  }
+
+  componentDidMount() {
+    this.loadItems()
+  }
+
+  loadItems(): void {
+    this.setState({ loading: true })
+    this.onLoadItems().subscribe(items => this.setState({ items, loading: false }))
+  }
+
+  protected abstract onLoadItems(): Observable<T[]>
 }
