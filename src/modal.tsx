@@ -178,12 +178,12 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
     this.modal.update()
   }
 
-  protected close(state?: object): void {
+  protected close(state?: any): void {
     const observable = this.onClose(state)
     this.modal.close(observable)
   }
 
-  protected onClose(state?: object): Observable<any> {
+  protected onClose(state?: any): Observable<any> {
     return null
   }
 }
