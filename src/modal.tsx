@@ -7,6 +7,7 @@ import { GetFieldDecoratorOptions } from 'antd/es/form/Form'
 import { TableProps } from 'antd/es/table'
 import { PaginationProps } from 'antd/es/pagination'
 import { ButtonProps } from 'antd/es/button'
+import { of } from 'rxjs'
 import Template from '@billypon/react-template'
 import { Dictionary } from '@billypon/ts-types'
 
@@ -233,8 +234,8 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
     if (this.modal.props.okButtonProps.loading) {
       this.setState({ loading: true })
       observable.subscribe(
-        () => {
-          this.modal.close();
+        result => {
+          this.modal.close(of(result));
         },
         () => {
           this.setOkButtonLoading(false)
