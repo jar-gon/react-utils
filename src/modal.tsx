@@ -195,6 +195,7 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
 
   submitForm: () => void
   protected getItemHelp: (name: string) => React.ReactNode
+  protected setSelectValidFn: (...fields: string[]) => void
 
   constructor(props) {
     super(props)
