@@ -107,20 +107,20 @@ class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormC
 
       if (type === 'select') {
         this.setSelectValidFn(name)
-        const selectAddition: SelectAddition = addition || { };
+        const selectAddition: SelectAddition = addition || { }
         if (selectAddition.dataFrom) {
           if (typeof selectAddition.dataFrom === 'string') {
-            axios.get(selectAddition.dataFrom).pipe(parseResponse).subscribe((items: SelectDataOption[]) => selectAddition.data = items);
+            axios.get(selectAddition.dataFrom).pipe(parseResponse).subscribe((items: SelectDataOption[]) => selectAddition.data = items)
           } else if (selectAddition.dataFrom instanceof Observable) {
-            selectAddition.dataFrom.subscribe(items => selectAddition.data = items);
+            selectAddition.dataFrom.subscribe(items => selectAddition.data = items)
           } else if ([ 'query', 'param' ].every(name => !selectAddition.dataFrom[name])) {
-            this.loadSelectData(selectAddition);
+            this.loadSelectData(selectAddition)
           } else {
             [ 'query', 'param' ].forEach(name => {
               if (selectAddition.dataFrom[name]) {
-                this.initSelect(selectAddition, name);
+                this.initSelect(selectAddition, name)
               }
-            });
+            })
           }
         }
       }
@@ -172,7 +172,7 @@ class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormC
       })
     }
   }
-  
+
   protected formSubmit(values: Dictionary) {
     if (this.props.onSubmit) {
       this.props.onSubmit(values)

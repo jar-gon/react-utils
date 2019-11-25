@@ -228,22 +228,22 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
 
   protected formSubmit(values: Dictionary): void {
     if (this.state.loading) {
-      return;
+      return
     }
-    const observable = this.onClose(values);
+    const observable = this.onClose(values)
     if (this.modal.props.okButtonProps.loading) {
       this.setState({ loading: true })
       observable.subscribe(
         result => {
-          this.modal.close(of(result));
+          this.modal.close(of(result))
         },
         () => {
           this.setOkButtonLoading(false)
           this.setState({ loading: false })
         },
-      );
+      )
     } else {
-      this.modal.close(observable);
+      this.modal.close(observable)
     }
   }
 
