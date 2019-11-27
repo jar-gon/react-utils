@@ -16,8 +16,8 @@ import { FormComponent as OriginFormComponent , FormComponentProps as OriginForm
 import { parseResponse } from './ajax'
 
 interface FormComponentProps {
+  $ref: FormComponentRef
   states: Dictionary<FormState>
-  container: FormComponentContainer
   onSubmit: (values: Dictionary) => void
 }
 
@@ -28,7 +28,17 @@ interface FormComponentState {
 class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormComponentProps, FormComponentState & OriginFormComponentState> {
   constructor(props) {
     super(props)
+    const { setFieldsValue, resetFields } = props.form
     Object.assign(this.state, { fields: this.initForm() })
+    if (props.$ref) {
+      Object.assign(props.$ref, {
+        _submit: this.submitForm,
+        _setFieldsValue: setFieldsValue,
+        _resetFields: resetFields,
+        _isLoading: () => this.state.loading,
+        _setLoading: loading => this.setState({ loading }),
+      })
+    }
   }
 
   protected getFormFields() {
@@ -41,19 +51,6 @@ class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormC
       }
     })
     return fields
-  }
-
-  protected formInit() {
-    if (this.props.container) {
-      const { setFieldsValue, resetFields } = this.props.form
-      Object.assign(this.props.container, {
-        _submit: this.submitForm,
-        _setFieldsValue: setFieldsValue,
-        _resetFields: resetFields,
-        _isLoading: () => this.state.loading,
-        _setLoading: loading => this.setState({ loading }),
-      })
-    }
   }
 
   protected initForm(): Dictionary<FormField> {
@@ -424,7 +421,7 @@ export interface FormFieldItemRender {
 
 export type FormItemRenderFn = (props: FormItemRenderProps) => React.ReactNode
 
-export class FormComponentContainer {
+export class FormComponentRef {
   _submit: () => void
   _setFieldsValue: (object: Object, callback?: Function) => void
   _resetFields: () => void
