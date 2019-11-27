@@ -45,9 +45,10 @@ class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormC
 
   protected formInit() {
     if (this.props.container) {
-      const { resetFields } = this.props.form
+      const { setFieldsValue, resetFields } = this.props.form
       Object.assign(this.props.container, {
         _submitForm: this.submitForm,
+        _setFieldsValue: setFieldsValue,
         _resetFields: resetFields,
         _isLoading: () => this.state.loading,
         _setLoading: loading => this.setState({ loading }),
@@ -425,6 +426,7 @@ export type FormItemRenderFn = (props: FormItemRenderProps) => React.ReactNode
 
 export class FormComponentContainer {
   _submitForm: () => void
+  _setFieldsValue: (object: Object, callback?: Function) => void
   _resetFields: () => void
   _isLoading: () => boolean
   _setLoading: (loading: boolean) => Observable<void>
@@ -432,6 +434,12 @@ export class FormComponentContainer {
   submitForm = () => {
     if (this._submitForm) {
       this._submitForm()
+    }
+  }
+
+  setFieldsValue = (object: Object, callback?: Function) => {
+    if (this._setFieldsValue) {
+      this._setFieldsValue(object, callback)
     }
   }
 
