@@ -29,7 +29,6 @@ class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormC
   constructor(props) {
     super(props)
     Object.assign(this.state, { fields: this.initForm() })
-    this.loadSelectData = this.loadSelectData.bind(this)
   }
 
   protected getFormFields() {
