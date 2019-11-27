@@ -16,7 +16,7 @@ import { FormComponent as OriginFormComponent , FormComponentProps as OriginForm
 import { parseResponse } from './ajax'
 
 interface FormComponentProps {
-  $ref: FormComponentRef
+  _ref: FormComponentRef
   states: Dictionary<FormState>
   onSubmit: (values: Dictionary) => void
 }
@@ -30,8 +30,8 @@ class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormC
     super(props)
     const { setFieldsValue, resetFields } = props.form
     Object.assign(this.state, { fields: this.initForm() })
-    if (props.$ref) {
-      Object.assign(props.$ref, {
+    if (props._ref) {
+      Object.assign(props._ref, {
         _submit: this.submitForm,
         _setFieldsValue: setFieldsValue,
         _resetFields: resetFields,
