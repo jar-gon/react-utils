@@ -6,12 +6,18 @@ import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
 
-interface ColumnRender {
-  render?: (text: any, record: any, index: number) => React.ReactNode
-  props?: {
-    colSpan?: number
-    rowSpan?: number
-  }
+interface CellType {
+  colSpan?: number
+  rowSpan?: number
+}
+
+interface RenderedCell {
+  props?: CellType
+  children?: React.ReactNode
+}
+
+interface TableXColumnProps extends ColumnProps<any> {
+  renderProps?: CellType
 }
 
 export function TableX(props: TableProps<any>) {
@@ -19,32 +25,42 @@ export function TableX(props: TableProps<any>) {
     const elementProps = { ...element.props }
     return { ...element, props: elementProps }
   })
-  const columns = props.columns || children.map(element => element.props)
+  const columns = (props.columns || children.map(element => element.props)) as TableXColumnProps[]
   if (columns.length) {
-    const renders: Dictionary<ColumnRender> = { }
-    Object.entries(props).forEach(([ key, value ]) => {
-      if (key.startsWith('column-')) {
-        const [ _, indexOrKey, prop ] = key.split('-')
-        let colIndex = parseInt(indexOrKey, 10)
-        colIndex = !Number.isNaN(colIndex) ? colIndex : columns.findIndex((column) => column.key === indexOrKey)
-        const column = columns[colIndex]
-        if (column && !(column as any)._overridden) {
-          renders[colIndex] = renders[colIndex] || { props: { } }
+    const cells: RenderedCell[] = [ ]
+    Object.entries(props).filter(([ key ]) => key.startsWith('column-')).forEach(([ key, value ]) => {
+      const [ _, indexOrKey, prop ] = key.split('-')
+      let columnIndex = parseInt(indexOrKey, 10)
+      columnIndex = !Number.isNaN(columnIndex) ? columnIndex : columns.findIndex((column) => column.key === indexOrKey)
+      const column = columns[columnIndex]
+      if (column) {
+        let cell = cells[columnIndex]
+        if (!cell) {
+          const columnRender = (column.render || { }) as RenderedCell
+          cells[columnIndex] = { children: columnRender.children || columnRender, props: column.renderProps || { } }
+          cell = cells[columnIndex]
           column.render = (text, record, index) => {
-            const { render, props } = renders[colIndex] || { }
+            const render = cell.children
             return {
+              props: cell.props,
               children: render && (typeof render !== 'function' ? render : render(text, record, index)),
-              props,
             }
           }
-          (column as any)._overridden = true
-          if (!prop || prop === 'render') {
-            renders[colIndex].render = value
-          } else {
-            renders[colIndex].props[prop] = value
-          }
+        }
+        if (!prop) {
+          cell.children = value
+        } else {
+          cell.props[prop] = value
         }
       }
+    })
+    columns.filter((column, index) => column.renderProps && !cells[index]).forEach(column => {
+      const columnRender = (column.render || { }) as RenderedCell
+      const render = columnRender.children || columnRender
+      column.render = (text, record, index) => ({
+        props: column.renderProps,
+        children: render && (typeof render !== 'function' ? render : render(text, record, index)),
+      })
     })
   }
 
