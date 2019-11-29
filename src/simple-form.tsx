@@ -1,5 +1,5 @@
 import React from 'react'
-import Form, { ValidationRule } from 'antd/es/form'
+import Form, { FormComponentProps, ValidationRule } from 'antd/es/form'
 import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form'
 import Checkbox from 'antd/es/checkbox'
 import DatePicker from 'antd/es/date-picker'
@@ -12,20 +12,20 @@ import { Observable, Subject, never } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { Dictionary } from '@billypon/ts-types'
 
-import { FormComponent as OriginFormComponent , FormComponentProps as OriginFormComponentProps, FormComponentState as OriginFormComponentState } from './form'
+import { FormComponent, FormComponentState } from './form'
 import { parseResponse } from './ajax'
 
-interface FormComponentProps {
-  _ref: FormComponentRef
+interface SimpleFormProps {
+  _ref: SimpleFormRef
   states: Dictionary<FormState>
   onSubmit: (values: Dictionary) => void
 }
 
-interface FormComponentState {
+interface SimpleFormState {
   fields: Dictionary<FormField>
 }
 
-class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormComponentProps, FormComponentState & OriginFormComponentState> {
+class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, FormComponentState & SimpleFormState> {
   constructor(props) {
     super(props)
     const { setFieldsValue, resetFields } = props.form
@@ -365,7 +365,7 @@ class FormComponent extends OriginFormComponent<FormComponentProps & OriginFormC
   }
 }
 
-export default Form.create()(FormComponent)
+export default Form.create()(SimpleForm) as any
 
 export interface FormState {
   label: string
@@ -421,7 +421,7 @@ export interface FormFieldItemRender {
 
 export type FormItemRenderFn = (props: FormItemRenderProps) => React.ReactNode
 
-export class FormComponentRef {
+export class SimpleFormRef {
   _submit: () => void
   _setFieldsValue: (object: Object, callback?: Function) => void
   _resetFields: () => void

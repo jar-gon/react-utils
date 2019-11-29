@@ -26,11 +26,11 @@
     "src/common.ts",
     "src/config.ts",
     "src/form.tsx",
-    "src/form-component.tsx",
     "src/form/validators",
     "src/modal.tsx",
     "src/next.tsx",
     "src/react.ts",
+    "src/simple-form.tsx",
     "src/table.tsx",
     "node_modules/next/types/global.d.ts"
   ]
