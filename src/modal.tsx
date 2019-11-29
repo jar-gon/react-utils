@@ -13,6 +13,7 @@ import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
 import { FormX, FormComponentProps, FormComponentState } from './form'
+import SimpleForm, { SimpleFormRef, FormState } from './simple-form'
 import { ListState, TableX } from './table'
 
 const destroyFns: Function[] = [ ]
@@ -186,6 +187,48 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
 
   protected onClose(state?: any): Observable<any> {
     return null
+  }
+}
+
+export abstract class SimpleFormModalComponent<P = { }, S extends FormComponentState = FormComponentState> extends ModalComponent<P, S> {
+  form = new SimpleFormRef()
+  states: Dictionary<FormState>
+
+  constructor(props) {
+    super(props)
+    this.states = this.getFormStates()
+    this.onSubmit = this.onSubmit.bind(this)
+  }
+
+  protected abstract getFormStates(): Dictionary<FormState>
+
+  protected close() {
+    this.form.submit()
+  }
+
+  protected onSubmit(values: Dictionary): void {
+    if (this.state.loading) {
+      return
+    }
+    const observable = this.onClose(values)
+    if (this.modal.props.okButtonProps.loading) {
+      this.setState({ loading: true })
+      observable.subscribe(
+        result => {
+          this.modal.close(of(result))
+        },
+        () => {
+          this.setOkButtonLoading(false)
+          this.setState({ loading: false })
+        },
+      )
+    } else {
+      this.modal.close(observable)
+    }
+  }
+
+  render() {
+    return <SimpleForm _ref={ this.form } states={ this.states } onSubmit={ this.onSubmit } />
   }
 }
 
