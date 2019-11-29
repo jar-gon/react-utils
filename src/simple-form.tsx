@@ -224,7 +224,7 @@ class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, For
     const inputAddition = addition as InputAddition
     if (!inputAddition.multiline) {
       const InputComponent = field.subtype !== 'password' ? Input : Input.Password
-      const extraProps = field.subtype !== 'password' ? { } : { visibilityToggle: false }
+      const extraProps = field.subtype !== 'password' ? { } : { visibilityToggle: (inputAddition as InputPasswordAddition).toggle === true }
       if (!(inputAddition.addonBefore || inputAddition.addonAfter || inputAddition.prefix || inputAddition.suffix)) {
         return <InputComponent
           type={ field.subtype }
@@ -497,6 +497,10 @@ export interface InputAddition extends FormStateAddition {
   prefix?: FormItemRenderFn
   suffix?: FormItemRenderFn
   multiline?: boolean
+}
+
+export interface InputPasswordAddition extends InputAddition {
+  toggle?: boolean
 }
 
 export interface InputNumberAddition extends FormStateAddition {
