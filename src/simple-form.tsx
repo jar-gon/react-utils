@@ -25,7 +25,7 @@ interface SimpleFormState {
   fields: Dictionary<FormField>
 }
 
-class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, FormComponentState & SimpleFormState> {
+export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, FormComponentState & SimpleFormState> {
   constructor(props) {
     super(props)
     const { setFieldsValue, resetFields } = props.form
@@ -368,7 +368,7 @@ class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, For
   }
 }
 
-export default Form.create()(SimpleForm) as any
+export default Form.create({ name: 'simple-form' })(SimpleForm) as any
 
 export interface FormState {
   label: string
