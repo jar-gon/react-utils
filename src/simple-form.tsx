@@ -93,7 +93,7 @@ class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, For
       const afterChange = new Subject<any>()
 
       fields[name] = {
-        label: type === 'checkbox' && subtype !== 'group' ? '' : label,
+        label: type === 'checkbox' && subtype !== 'group' ? ' ' : label,
         placeholder: placeholder === undefined ? label : (placeholder || ''),
         type: type || 'input',
         subtype: subtype || 'text',
@@ -303,7 +303,7 @@ class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, For
       return (
         <Checkbox
           onChange={ validate }
-        />
+        >{ field.placeholder }</Checkbox>
       )
     } else {
       return (
