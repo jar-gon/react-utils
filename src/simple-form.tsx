@@ -49,6 +49,9 @@ class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, For
         rules: state.rules,
         validateFirst: true,
       }
+      if (state.type === 'checkbox') {
+        fields[name].valuePropName = 'valuePropName'
+      }
     })
     return fields
   }
