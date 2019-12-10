@@ -98,6 +98,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         type: type || 'input',
         subtype: subtype || 'text',
         addition,
+        disabled,
         hidden: typeof hidden === 'function' ? hidden : () => hidden,
         extraText: !extraText ? null : extraText instanceof Function ? extraText : () => extraText,
         helpText: helpText as Dictionary<(state: object) => string>,
@@ -227,7 +228,8 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     const inputAddition = addition as InputAddition
     if (!inputAddition.multiline) {
       const InputComponent = field.subtype !== 'password' ? Input : Input.Password
-      const extraProps = field.subtype !== 'password' ? { } : { visibilityToggle: (inputAddition as InputPasswordAddition).toggle === true }
+      const extraProps: Dictionary = field.subtype !== 'password' ? { } : { visibilityToggle: (inputAddition as InputPasswordAddition).toggle === true }
+      extraProps.disabled = field.disabled
       if (!(inputAddition.addonBefore || inputAddition.addonAfter || inputAddition.prefix || inputAddition.suffix)) {
         return <InputComponent
           type={ field.subtype }
@@ -391,6 +393,7 @@ export interface FormField {
   type: string
   subtype: string
   addition: FormStateAddition
+  disabled?: boolean
   hidden: () => boolean
   helpText: Dictionary<(state: object) => string>
   extraText: () => string
