@@ -112,9 +112,15 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         const selectAddition: SelectAddition = addition || { }
         if (selectAddition.dataFrom) {
           if (typeof selectAddition.dataFrom === 'string') {
-            axios.get(selectAddition.dataFrom).pipe(parseResponse).subscribe((items: SelectDataOption[]) => selectAddition.data = items)
+            axios.get(selectAddition.dataFrom).pipe(parseResponse).subscribe((items: SelectDataOption[]) => {
+              selectAddition.data = items
+              this.triggerUpdate()
+            })
           } else if (selectAddition.dataFrom instanceof Observable) {
-            selectAddition.dataFrom.subscribe(items => selectAddition.data = items)
+            selectAddition.dataFrom.subscribe(items => {
+              selectAddition.data = items
+              this.triggerUpdate()
+            })
           } else if ([ 'query', 'param' ].every(name => !selectAddition.dataFrom[name])) {
             this.loadSelectData(selectAddition)
           } else {
