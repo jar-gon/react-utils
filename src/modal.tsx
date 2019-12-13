@@ -180,6 +180,11 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
     this.modal.update()
   }
 
+  protected setTitle(title: string): void {
+    this.modal.props.title = title
+    this.modal.update()
+  }
+
   protected close(state?: any): void {
     const observable = this.onClose(state)
     this.modal.close(observable)
