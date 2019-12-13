@@ -73,12 +73,17 @@ export function TableX(props: TableProps<any>) {
   )
 }
 
+export interface ListProps<T = any> {
+  rowKey: string
+  onLoad: (pageSize: number, pageNumber: number) => Observable<T[]>
+}
+
 export interface ListState<T = any> {
   items: T[]
   loading: boolean
 }
 
-export abstract class TableComponent<P = { }, S extends ListState = ListState, T = any> extends Component<P, S> {
+export class TableComponent<P = ListProps, S extends ListState = ListState, T = any> extends Component<P, S> {
   pageNumber = 1
   pageSize = 10
   totalCount = 0
@@ -117,5 +122,16 @@ export abstract class TableComponent<P = { }, S extends ListState = ListState, T
     this.onLoadItems().subscribe(items => this.setState({ items, loading: false }))
   }
 
-  protected abstract onLoadItems(): Observable<T[]>
+  protected onLoadItems(): Observable<T[]> {
+    const { onLoad } = this.props as any
+    return onLoad && onLoad(this.pageSize, this.pageNumber)
+  }
+
+  render() {
+    const { TableX } = this
+    const { rowKey } = this.props as any
+    return (
+      <TableX rowKey={ rowKey }>{ this.props.children }</TableX>
+    )
+  }
 }
