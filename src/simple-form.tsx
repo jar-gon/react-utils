@@ -28,12 +28,13 @@ interface SimpleFormState {
 export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, FormComponentState & SimpleFormState> {
   constructor(props) {
     super(props)
-    const { setFieldsValue, resetFields } = props.form
+    const { setFieldsValue, getFieldValue, resetFields } = props.form
     Object.assign(this.state, { fields: this.initForm() })
     if (props._ref) {
       Object.assign(props._ref, {
         _submit: this.submitForm,
         _setFieldsValue: setFieldsValue,
+        _getFieldValue: getFieldValue,
         _resetFields: resetFields,
         _isLoading: () => this.state.loading,
         _setLoading: loading => this.setState({ loading }),
@@ -436,6 +437,7 @@ export type FormItemRenderFn = (props: FormItemRenderProps) => React.ReactNode
 export class SimpleFormRef {
   _submit: () => void
   _setFieldsValue: (object: Object, callback?: Function) => void
+  _getFieldValue: (name: string) => any
   _resetFields: () => void
   _isLoading: () => boolean
   _setLoading: (loading: boolean) => Observable<void>
@@ -450,6 +452,10 @@ export class SimpleFormRef {
     if (this._setFieldsValue) {
       this._setFieldsValue(object, callback)
     }
+  }
+
+  getFieldValue = (name: string) => {
+    return this._getFieldValue && this._getFieldValue(name)
   }
 
   resetFields = () => {
