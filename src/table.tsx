@@ -109,7 +109,7 @@ export class TableComponent<P = ListProps, S extends ListState = ListState, T = 
     )
   }
 
-  private changePage = (page: number) => {
+  protected changePage = (page: number) => {
     this.pageNumber = page
     this.loadItems()
   }
