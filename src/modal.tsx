@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { NextComponentType } from 'next/dist/next-server/lib/utils'
 import { Observable, Subject } from 'rxjs'
 import Modal, { ModalProps } from 'antd/es/modal'
+import { FormProps } from 'antd/es/form'
 import { GetFieldDecoratorOptions } from 'antd/es/form/Form'
 import { TableProps } from 'antd/es/table'
 import { PaginationProps } from 'antd/es/pagination'
@@ -198,14 +199,20 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
 export abstract class SimpleFormModalComponent<P = { }, S extends FormComponentState = FormComponentState> extends ModalComponent<P, S> {
   form = new SimpleFormRef()
   states: Dictionary<FormState>
+  formProps: FormProps
 
   constructor(props) {
     super(props)
     this.states = this.getFormStates()
+    this.formProps = this.getFormProps()
     this.onSubmit = this.onSubmit.bind(this)
   }
 
   protected abstract getFormStates(): Dictionary<FormState>
+
+  protected getFormProps(): FormProps {
+    return null
+  }
 
   protected close() {
     this.form.submit()
@@ -233,7 +240,7 @@ export abstract class SimpleFormModalComponent<P = { }, S extends FormComponentS
   }
 
   render() {
-    return <SimpleForm _ref={ this.form } states={ this.states } onSubmit={ this.onSubmit } />
+    return <SimpleForm { ...this.formProps } _ref={ this.form } states={ this.states } onSubmit={ this.onSubmit } />
   }
 }
 
