@@ -190,8 +190,20 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
   }
 
   protected close(state?: any): void {
+    const modalProps = this.modal.props
     const observable = this.onClose(state)
-    this.modal.close(observable)
+    if (modalProps.okButtonProps.loading) {
+      observable.subscribe(
+        result => {
+          this.modal.close(of(result))
+        },
+        () => {
+          this.setOkButtonLoading(false)
+        },
+      )
+    } else {
+      this.modal.close(observable)
+    }
   }
 
   protected onClose(state?: any): Observable<any> {
