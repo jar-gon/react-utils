@@ -162,10 +162,11 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
   }
 
   protected getOkButtonProps(): ButtonProps {
+    const modalProps = this.modal.props
     return {
       children: '确定',
       type: 'primary',
-      onClick: () => !this.modal.props.okButtonProps.loading ? this.close() : 0,
+      onClick: () => !modalProps.okButtonProps.loading ? this.close() : 0,
     }
   }
 
@@ -177,12 +178,14 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
   }
 
   protected setOkButtonLoading(loading: boolean): void {
-    this.modal.props.okButtonProps.loading = loading
+    const modalProps = this.modal.props
+    modalProps.okButtonProps.loading = loading
     this.modal.update()
   }
 
   protected setTitle(title: string): void {
-    this.modal.props.title = title
+    const modalProps = this.modal.props
+    modalProps.title = title
     this.modal.update()
   }
 
@@ -222,8 +225,9 @@ export abstract class SimpleFormModalComponent<P = { }, S extends FormComponentS
     if (this.state.loading) {
       return
     }
+    const modalProps = this.modal.props
     const observable = this.onClose(values)
-    if (this.modal.props.okButtonProps.loading) {
+    if (modalProps.okButtonProps.loading) {
       this.setState({ loading: true })
       observable.subscribe(
         result => {
@@ -285,8 +289,9 @@ export class FormModalComponent<P extends FormComponentProps = FormComponentProp
     if (this.state.loading) {
       return
     }
+    const modalProps = this.modal.props
     const observable = this.onClose(values)
-    if (this.modal.props.okButtonProps.loading) {
+    if (modalProps.okButtonProps.loading) {
       this.setState({ loading: true })
       observable.subscribe(
         result => {
