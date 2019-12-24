@@ -23,6 +23,7 @@ interface SimpleFormProps {
 
 interface SimpleFormState {
   fields: Dictionary<FormField>
+  hideFields: boolean
 }
 
 export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, FormComponentState & SimpleFormState> {
@@ -42,24 +43,33 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     }
   }
 
-  protected getFormFields() {
+  formInit() {
+    this.setState({ hideFields: true })
+  }
+
+  protected getFormFields(states = this.props.states, prefix = '') {
     const fields: Dictionary<GetFieldDecoratorOptions> = { }
-    Object.entries(this.props.states).forEach(([ name, state ]: [ string, FormState ]) => {
-      fields[name] = {
-        initialValue: state.value,
-        rules: state.rules,
-        validateFirst: true,
-      }
-      if (state.type === 'checkbox') {
-        fields[name].valuePropName = 'valuePropName'
+    Object.entries(states).forEach(([ name, state ]: [ string, FormState ]) => {
+      if (!state.children) {
+        fields[prefix + name] = {
+          initialValue: state.value,
+          rules: state.rules,
+          validateFirst: true,
+          preserve: true,
+        }
+        if (state.type === 'checkbox' && state.subtype !== 'group') {
+          fields[prefix + name].valuePropName = 'checked'
+        }
+      } else {
+        Object.assign(fields, this.getFormFields(state.children, `${ name }.`))
       }
     })
     return fields
   }
 
-  protected initForm(): Dictionary<FormField> {
+  protected initForm(states = this.props.states, prefix = ''): Dictionary<FormField> {
     const fields: Dictionary<FormField> = { }
-    Object.entries(this.props.states).forEach(([ name, state ]: [ string, FormState ]) => {
+    Object.entries(states).forEach(([ name, state ]: [ string, FormState ]) => {
       const {
         label,
         value,
@@ -74,6 +84,11 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         helpText = { },
       } = state
       const render = state.render || { } as FormStateItemRender
+
+      if (state.children) {
+        fields[name] = { label, children: this.initForm(state.children) }
+        return
+      }
 
       addition.label = addition.label !== undefined ? addition.label : true
       addition.class = addition.class || { }
@@ -109,7 +124,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       }
 
       if (type === 'select') {
-        this.setSelectValidFn(name)
+        this.setSelectValidFn(prefix + name)
         const selectAddition: SelectAddition = addition || { }
         if (selectAddition.dataFrom) {
           if (typeof selectAddition.dataFrom === 'string') {
@@ -122,12 +137,12 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
               selectAddition.data = items
               this.triggerUpdate()
             })
-          } else if ([ 'query', 'param' ].every(name => !selectAddition.dataFrom[name])) {
+          } else if ([ 'query', 'param' ].every(x => !selectAddition.dataFrom[x])) {
             this.loadSelectData(selectAddition)
           } else {
-            [ 'query', 'param' ].forEach(name => {
-              if (selectAddition.dataFrom[name]) {
-                this.initSelect(selectAddition, name)
+            [ 'query', 'param' ].forEach(x => {
+              if (selectAddition.dataFrom[x]) {
+                this.initSelect(selectAddition, x)
               }
             })
           }
@@ -189,10 +204,16 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
   }
 
   protected renderItem(props: FormItemRenderProps): React.ReactNode {
+    const { hideFields } = this.state
     const { name, field } = props
-    const { render } = field
+    const { addition, hidden, render } = field
     const { FormItem } = this as any
-    return <FormItem key={ name } name={ name } label={ field.label } help={ render.help } extra={ render.extra }>{ field.render.control(props) }</FormItem>
+    if (hideFields && hidden()) {
+      return null
+    }
+    return addition.decorator !== false
+      ? <FormItem key={ name } name={ name } label={ field.label } help={ render.help } extra={ render.extra }>{ field.render.control(props) }</FormItem>
+      : <Form.Item key={ name } label={ field.label } help={ render.help } extra={ render.extra }>{ field.render.control(props) }</Form.Item>
   }
 
   protected renderField(props: FormItemRenderProps): React.ReactNode {
@@ -365,11 +386,29 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       <FormX { ...this.props } onSubmit={ submitForm }>
         {
           Object.entries(this.state.fields).map(([ name, field ]: [ string, FormField ]) => {
-            const value = values[name]
-            const { addition } = field
-            const validate = validFns[name]
-            const props: FormItemRenderProps = { name, value, field, addition, validate, form }
-            return field.render.item(props)
+            if (!field.children) {
+              const value = values[name]
+              const { addition } = field
+              const validate = validFns[name]
+              const props: FormItemRenderProps = { name, value, field, addition, validate, form }
+              return field.render.item(props)
+            } else {
+              return (
+                <div key={ name } className="form-group">
+                  <div className="form-group-caption">{ field.label }</div>
+                  {
+                    Object.entries(field.children).map(([ subName, subField ]: [ string, FormField ]) => {
+                      const fullName = `${ name }.${ subName }`
+                      const value = values[fullName]
+                      const { addition } = subField
+                      const validate = validFns[fullName]
+                      const props: FormItemRenderProps = { name: fullName, value, field: subField, addition, validate, form }
+                      return subField.render.item(props)
+                    })
+                  }
+                </div>
+              )
+            }
           })
         }
       </FormX>
@@ -388,25 +427,27 @@ export interface FormState {
   rules?: ValidationRule[]
   addition?: FormStateAddition
   disabled?: boolean
-  hidden?: boolean
+  hidden?: boolean | (() => boolean)
   helpText?: Dictionary<string | ((state: object) => string)>
   extraText?: string | (() => string)
   render?: FormStateItemRender
+  children?: Dictionary<FormState>
 }
 
 export interface FormField {
   label: string
-  placeholder: string
-  type: string
-  subtype: string
-  addition: FormStateAddition
+  placeholder?: string
+  type?: string
+  subtype?: string
+  addition?: FormStateAddition
   disabled?: boolean
-  hidden: () => boolean
-  helpText: Dictionary<(state: object) => string>
-  extraText: () => string
+  hidden?: () => boolean
+  helpText?: Dictionary<(state: object) => string>
+  extraText?: () => string
   render?: FormFieldItemRender
   afterChange?: Subject<any>
   onChange?: (event: React.ChangeEvent<HTMLFormType>) => void
+  children?: Dictionary<FormField>
 }
 
 export interface FormItemRenderProps {
@@ -487,6 +528,7 @@ export interface FormStateAddition {
     label?: string
     control?: string
   }
+  decorator?: boolean
 }
 
 
