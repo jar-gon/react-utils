@@ -53,11 +53,11 @@ export class FormX {
     }
     this.form.validateFields((err, values) => {
       if (!err) {
-        Object.keys(this.fields).forEach(id => this.errors[id] = null)
+        Object.keys(this.fields).forEach(name => this.errors[name] = null)
         this.submitCallback(values)
       } else {
-        Object.keys(this.fields).forEach(id => {
-          this.errors[id] = err[id] && err[id].errors.map(({ message }) => message)
+        Object.keys(this.fields).forEach(name => {
+          this.errors[name] = err[name] && err[name].errors.map(({ message }) => message)
         })
       }
     })
@@ -92,11 +92,11 @@ export class FormX {
     private triggerUpdate?: () => void,
   ) {
     const { getFieldDecorator, validateFields } = form
-    Object.entries(getFormFields()).forEach(([ id, options ]) => {
-      this.fields[id] = getFieldDecorator(id, options)
-      this.validFns[id] = () => {
-        validateFields([ id ], err => {
-          this.errors[id] = err && err[id].errors.map(({ message }) => message)
+    Object.entries(getFormFields()).forEach(([ name, options ]) => {
+      this.fields[name] = getFieldDecorator(name, options)
+      this.validFns[name] = () => {
+        validateFields([ name ], err => {
+          this.errors[name] = err && err[name].errors.map(({ message }) => message)
         })
       }
     })
