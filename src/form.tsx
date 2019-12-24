@@ -52,7 +52,7 @@ export class FormX {
     if (event && event.type === 'submit') {
       event.preventDefault()
     }
-    this.form.validateFields((err, values) => {
+    this.form.validateFields({ force: true }, (err, values) => {
       if (!err) {
         Object.keys(this.fields).forEach(name => this.errors[name] = null)
         this.submitCallback(values)
