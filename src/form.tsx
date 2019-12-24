@@ -10,6 +10,7 @@ export interface FormItemProps {
   label: string
   help: React.ReactNode | (() => React.ReactNode)
   extra: React.ReactNode | (() => React.ReactNode)
+  decorator: boolean
   children: React.ReactNode
 }
 
@@ -27,7 +28,7 @@ export class FormX {
     )
   }
 
-  private FormItem = ({ name, label, help, extra, children }: FormItemProps) => {
+  private FormItem = ({ name, label, help, extra, decorator, children }: FormItemProps) => {
     if (!help) {
       help = this.getItemHelp(name)
     } else if (typeof help === 'function') {
@@ -38,7 +39,7 @@ export class FormX {
     }
     return children && (
       <Form.Item label={ label } validateStatus={ this.errors[name] && 'error' } help={ help } extra={ extra }>
-        { this.fields[name](children) }
+        { decorator !== false ? this.fields[name](children) : children }
       </Form.Item>
     )
   }

@@ -211,9 +211,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     if (hideFields && hidden()) {
       return null
     }
-    return addition.decorator !== false
-      ? <FormItem key={ name } name={ name } label={ field.label } help={ render.help } extra={ render.extra }>{ field.render.control(props) }</FormItem>
-      : <Form.Item key={ name } label={ field.label } help={ render.help } extra={ render.extra }>{ field.render.control(props) }</Form.Item>
+    return <FormItem key={ name } name={ name } label={ field.label } help={ render.help } extra={ render.extra } decorator={ addition.decorator }>{ field.render.control(props) }</FormItem>
   }
 
   protected renderField(props: FormItemRenderProps): React.ReactNode {
