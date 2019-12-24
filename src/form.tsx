@@ -56,9 +56,7 @@ export class FormX {
         Object.keys(this.fields).forEach(name => this.errors[name] = null)
         this.submitCallback(values)
       } else {
-        Object.keys(this.fields).forEach(name => {
-          this.errors[name] = err[name] && err[name].errors.map(({ message }) => message)
-        })
+        Object.keys(this.fields).forEach(name => this.setErrors(name, err))
       }
     })
   }
@@ -95,14 +93,18 @@ export class FormX {
     Object.entries(getFormFields()).forEach(([ name, options ]) => {
       this.fields[name] = getFieldDecorator(name, options)
       this.validFns[name] = () => {
-        validateFields([ name ], err => {
-          this.errors[name] = err && err[name].errors.map(({ message }) => message)
-        })
+        validateFields([ name ], err => this.setErrors(name, err))
       }
     })
     if (context) {
       [ 'fields', 'errors', 'validFns', 'submitForm', 'getItemHelp', 'setSelectValidFn', 'FormX', 'FormItem', 'FormField' ].forEach(x => context[x] = this[x])
     }
+  }
+
+  private setErrors(name: string, errors: Dictionary): void {
+    let err: Dictionary = errors
+    name.split('.').forEach(x => err = err && err[x])
+    this.errors[name] = err && err.errors.map(({ message }) => message)
   }
 }
 
