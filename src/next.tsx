@@ -27,10 +27,10 @@ export function withAuthentication(check: () => boolean) {
   }
 }
 
-export function RedirectComponent(url: string) {
+export function RedirectComponent(url: string | (() => string)) {
   return () => {
     if (browser) {
-      router.replace(url)
+      router.replace(url instanceof Function ? url() : url)
     }
     return null
   }
