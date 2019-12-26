@@ -1,9 +1,33 @@
 import React from 'react'
 import Form, { FormComponentProps as OriginFormComponentProps, ValidationRule } from 'antd/es/form'
 import { GetFieldDecoratorOptions, WrappedFormUtils } from 'antd/es/form/Form'
+import Spin from 'antd/es/spin'
 import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
+
+export interface FragmentWrapProps {
+  render(props: { }): React.ReactNode
+}
+
+export class FragmentWrap extends Component<FragmentWrapProps> {
+  render() {
+    const { render, ...props } = this.props
+    return render(props)
+  }
+}
+
+export interface SpinWrapProps {
+  spinning: boolean
+  render(props: { }): React.ReactNode
+}
+
+export class SpinWrap extends Component<SpinWrapProps> {
+  render () {
+    const { spinning, render, ...props } = this.props
+    return <Spin spinning={ spinning }>{ render(props) }</Spin>
+  }
+}
 
 export interface FormItemProps {
   name: string
@@ -99,6 +123,10 @@ export class FormX {
     })
     if (context) {
       [ 'fields', 'errors', 'validFns', 'submitForm', 'getItemHelp', 'setSelectValidFn', 'FormX', 'FormItem', 'FormField' ].forEach(x => context[x] = this[x])
+      Object.assign(context, {
+        FragmentWrap,
+        SpinWrap,
+      })
     }
   }
 
