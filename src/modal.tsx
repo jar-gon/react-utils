@@ -38,9 +38,11 @@ export default class ModalX<T = any> {
   private createdContainer: HTMLElement
 
   afterClose: Subject<T> = new Subject<T>()
+  afterCancel: Subject<void> = new Subject<void>()
 
   constructor(public props: ModalXProps) {
     destroyFns.push(this.destroy)
+    this.cancel = this.cancel.bind(this)
     if (props.content instanceof Template) {
       const template = props.content as Template
       template.afterChange.subscribe(() => {
@@ -95,6 +97,11 @@ export default class ModalX<T = any> {
     } else {
       this.afterClose.next(null)
     }
+  }
+
+  cancel(): void {
+    this.destroy()
+    this.afterCancel.next()
   }
 
   private destroy(): void {
