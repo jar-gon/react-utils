@@ -95,7 +95,7 @@ export default class ModalX<T = any> {
         this.afterClose.next(result)
       })
     } else {
-      this.afterClose.next(null)
+      this.afterClose.next(undefined)
     }
   }
 
