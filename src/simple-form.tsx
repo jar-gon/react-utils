@@ -39,6 +39,8 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         _getFieldValue: getFieldValue,
         _validateFields: validateFields,
         _resetFields: resetFields,
+        _setFieldError: this.setErrors,
+        _resetFieldError: (name: string) => this.errors[name] = null,
         _isLoading: () => this.state.loading,
         _setLoading: loading => this.setState({ loading }),
       })
@@ -481,6 +483,8 @@ export class SimpleFormRef {
   _getFieldValue: (name: string) => any
   _validateFields: (names?: string[], callback?: Function) => void
   _resetFields: () => void
+  _setFieldError: (name: string, error: Dictionary) => void
+  _resetFieldError: (name: string) => void
   _isLoading: () => boolean
   _setLoading: (loading: boolean) => Observable<void>
 
@@ -509,6 +513,18 @@ export class SimpleFormRef {
   resetFields = () => {
     if (this._resetFields) {
       this._resetFields()
+    }
+  }
+
+  setFieldError = (name: string, error: Dictionary) => {
+    if (this._setFieldError) {
+      this._setFieldError(name, error)
+    }
+  }
+
+  resetFieldError = (name: string) => {
+    if (this._resetFieldError) {
+      this._resetFieldError(name)
     }
   }
 

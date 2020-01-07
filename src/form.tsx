@@ -91,6 +91,12 @@ export class FormX {
     return errors && errors[0]
   }
 
+  private setErrors = (name: string, errors: Dictionary) => {
+    let err: Dictionary = errors
+    name.split('.').forEach(x => err = err && err[x])
+    this.errors[name] = err && err.errors.map(({ message }) => message)
+  }
+
   private setSelectValidFn(...fields: string[]): void {
     fields.forEach(x => {
       const fn = this.validFns[x]
@@ -122,18 +128,12 @@ export class FormX {
       }
     })
     if (context) {
-      [ 'fields', 'errors', 'validFns', 'submitForm', 'getItemHelp', 'setSelectValidFn', 'FormX', 'FormItem', 'FormField' ].forEach(x => context[x] = this[x])
+      [ 'fields', 'errors', 'validFns', 'submitForm', 'getItemHelp', 'setErrors', 'setSelectValidFn', 'FormX', 'FormItem', 'FormField' ].forEach(x => context[x] = this[x])
       Object.assign(context, {
         FragmentWrap,
         SpinWrap,
       })
     }
-  }
-
-  private setErrors(name: string, errors: Dictionary): void {
-    let err: Dictionary = errors
-    name.split('.').forEach(x => err = err && err[x])
-    this.errors[name] = err && err.errors.map(({ message }) => message)
   }
 }
 
@@ -152,6 +152,7 @@ export class FormComponent<P extends OriginFormComponentProps = OriginFormCompon
 
   submitForm: (event?: React.SyntheticEvent<HTMLElement>) => void
   protected getItemHelp: (name: string) => React.ReactNode
+  protected setErrors: (name: string, errors: Dictionary) => void
   protected setSelectValidFn: (...fields: string[]) => void
 
   constructor(props) {
