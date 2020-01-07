@@ -10,6 +10,7 @@ import Select from 'antd/es/select'
 import axios from 'axios-observable'
 import { Observable, Subject, never } from 'rxjs'
 import { map } from 'rxjs/operators'
+import Template from '@billypon/react-template'
 import { Dictionary } from '@billypon/ts-types'
 
 import { FormComponent, FormComponentState } from './form'
@@ -585,4 +586,23 @@ export interface RadioAddition<T = any> extends BaseSelectAddition {
 
 export interface DatePickerAddition extends FormStateAddition {
   format?: string
+}
+
+export function wrapItemTemplate({ template }: Template) {
+  return (itemProps: FormItemRenderProps): React.ReactNode => {
+    const element = template as React.ReactElement
+    const elementProps = element.props
+    const elementRender = (renderProps: { }) => {
+      Object.assign(renderProps, {
+        placeholder: itemProps.field.placeholder,
+      })
+      return elementProps.render(renderProps, itemProps)
+    }
+    return {
+      ...element,
+      props: {
+        render: elementRender,
+      },
+    }
+  }
 }
