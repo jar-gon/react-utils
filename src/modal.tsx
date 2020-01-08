@@ -133,7 +133,7 @@ export default class ModalX<T = any> {
         { ...this.props }
         getContainer={ false }
         visible
-        onCancel={ this.close.bind(this, undefined) }
+        onCancel={ this.cancel }
       >
         { content }
       </Modal>
@@ -180,7 +180,7 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
   protected getCancelButtonProps(): ButtonProps {
     return {
       children: '取消',
-      onClick: () => this.modal.close(),
+      onClick: () => this.modal.cancel(),
     }
   }
 
