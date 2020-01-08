@@ -196,6 +196,11 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
     this.modal.update()
   }
 
+  protected getTitle(): string {
+    const { title } = this.modal.props
+    return title as string
+  }
+
   protected close(state?: any): void {
     const modalProps = this.modal.props
     const observable = this.onClose(state)
