@@ -339,10 +339,11 @@ export abstract class TableModalComponent<P = { }, S extends ListState = ListSta
   pageNumber = 1
   pageSize = 10
   totalCount = 0
+  pagination = true
 
   private TableX = (props: TableProps<T>) => {
     const dataSource = props.dataSource || this.state.items
-    const pagination: PaginationProps = {
+    const pagination: PaginationProps = this.pagination && {
       current: this.pageNumber,
       pageSize: this.pageSize,
       total: this.totalCount,
