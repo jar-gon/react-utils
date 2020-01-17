@@ -113,7 +113,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       const afterChange = new Subject<any>()
 
       fields[name] = {
-        label: !addition.label ? '' : type !== 'checkbox' || subtype !== 'group' ? label : ' ',
+        label: !addition.label ? '' : type !== 'checkbox' || subtype === 'group' ? label : ' ',
         placeholder: placeholder === undefined ? label : (placeholder || ''),
         type: type || 'input',
         subtype: subtype || 'text',
