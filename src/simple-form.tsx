@@ -319,6 +319,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         placeholder={ field.placeholder }
         size={ addition.size }
         allowClear={ selectAddition.allowClear }
+        mode={ selectAddition.mode }
         disabled={ field.disabled() }
         onDropdownVisibleChange={ validate }
       >
@@ -599,6 +600,7 @@ export interface InputNumberAddition extends FormStateAddition {
 
 export interface SelectAddition<T = any> extends BaseSelectAddition {
   allowClear?: boolean
+  mode?: 'multiple' | 'tags'
 }
 
 export interface CheckboxAddition<T = any> extends BaseSelectAddition {
