@@ -118,7 +118,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         type: type || 'input',
         subtype: subtype || 'text',
         addition,
-        disabled,
+        disabled: typeof disabled === 'function' ? disabled : () => disabled,
         hidden: typeof hidden === 'function' ? hidden : () => hidden,
         extraText: extraText instanceof Function ? extraText : () => extraText,
         helpText: helpText as Dictionary<(state: object) => string>,
@@ -260,7 +260,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     if (!inputAddition.multiline) {
       const InputComponent = field.subtype !== 'password' ? Input : Input.Password
       const extraProps: Dictionary = field.subtype !== 'password' ? { } : { visibilityToggle: (inputAddition as InputPasswordAddition).toggle === true }
-      extraProps.disabled = field.disabled
+      extraProps.disabled = field.disabled()
       if (!(inputAddition.addonBefore || inputAddition.addonAfter || inputAddition.prefix || inputAddition.suffix)) {
         return <InputComponent
           type={ field.subtype }
@@ -305,6 +305,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       <InputNumber
         size={ addition.size }
         formatter={ inputNumberAddition.formatter }
+        disabled={ field.disabled() }
         onBlur={ validate }
       />
     )
@@ -318,6 +319,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         placeholder={ field.placeholder }
         size={ addition.size }
         allowClear={ selectAddition.allowClear }
+        disabled={ field.disabled() }
         onDropdownVisibleChange={ validate }
       >
         {
@@ -335,6 +337,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     if (field.subtype !== 'group') {
       return (
         <Checkbox
+          disabled={ field.disabled() }
           onChange={ validate }
         >{ field.placeholder }</Checkbox>
       )
@@ -342,6 +345,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       return (
         <Checkbox.Group
           options={ checkboxAddition.data }
+          disabled={ field.disabled() }
           onChange={ validate }
         />
       )
@@ -355,6 +359,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       <Radio.Group
         size={ addition.size }
         options={ field.subtype !== 'button' && radioAddition.data }
+        disabled={ field.disabled() }
         onChange={ validate }
       >
         {
@@ -373,6 +378,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       <DatePicker.RangePicker
         format={ datePickerAddition.format }
         showTime={ field.subtype.includes('time') }
+        disabled={ field.disabled() }
       />
     )
   }
@@ -429,7 +435,7 @@ export interface FormState {
   subtype?: string
   rules?: ValidationRule[]
   addition?: FormStateAddition
-  disabled?: boolean
+  disabled?: boolean | (() => boolean)
   hidden?: boolean | (() => boolean)
   helpText?: Dictionary<string | ((state: object) => string)>
   extraText?: string | (() => string)
@@ -443,7 +449,7 @@ export interface FormField {
   type?: string
   subtype?: string
   addition?: FormStateAddition
-  disabled?: boolean
+  disabled?: () => boolean
   hidden?: () => boolean
   helpText?: Dictionary<(state: object) => string>
   extraText?: () => string
