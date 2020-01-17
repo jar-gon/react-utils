@@ -84,8 +84,8 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         addition = { },
         disabled,
         hidden,
-        extraText,
         helpText = { },
+        extraText,
       } = state
       const render = state.render || { } as FormStateItemRender
 
@@ -107,7 +107,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       if (renderHelp) {
         render.help = renderHelp instanceof Function ? renderHelp : () => renderHelp
       }
-      if (render.extra) {
+      if (renderExtra) {
         render.extra = renderExtra instanceof Function ? renderExtra : () => renderExtra
       }
       const afterChange = new Subject<any>()
@@ -120,7 +120,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         addition,
         disabled,
         hidden: typeof hidden === 'function' ? hidden : () => hidden,
-        extraText: !extraText ? null : extraText instanceof Function ? extraText : () => extraText,
+        extraText: extraText instanceof Function ? extraText : () => extraText,
         helpText: helpText as Dictionary<(state: object) => string>,
         render: render as FormFieldItemRender,
         afterChange,
@@ -210,12 +210,13 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
   protected renderItem(props: FormItemRenderProps): React.ReactNode {
     const { hideFields } = this.state
     const { name, field } = props
-    const { addition, hidden, render } = field
+    const { addition, hidden, extraText, render } = field
+    const renderExtra = render.extra || extraText
     const { FormItem } = this as any
     if (hideFields && hidden()) {
       return null
     }
-    return <FormItem key={ name } name={ name } label={ field.label } help={ render.help } extra={ render.extra } decorator={ addition.decorator }>{ field.render.control(props) }</FormItem>
+    return <FormItem key={ name } name={ name } label={ field.label } help={ render.help } extra={ renderExtra } decorator={ addition.decorator }>{ field.render.control(props) }</FormItem>
   }
 
   protected renderField(props: FormItemRenderProps): React.ReactNode {
