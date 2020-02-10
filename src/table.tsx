@@ -102,7 +102,7 @@ export class TableComponent<P = ListProps, S extends ListState = ListState, T = 
         { ...props }
         dataSource={ dataSource }
         loading={ !dataSource }
-        pagination = { pagination }
+        pagination={ pagination }
       >
         { props.children }
       </TableX>
