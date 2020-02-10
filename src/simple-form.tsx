@@ -16,6 +16,16 @@ import { Dictionary } from '@billypon/ts-types'
 import { FormComponent, FormComponentState } from './form'
 import { parseResponse } from './ajax'
 
+function useNodeOrCallFunction(nodeOrFunction: React.ReactNode | ((...args: unknown[]) => React.ReactNode), ...args: unknown[]): React.ReactNode {
+  if (nodeOrFunction) {
+    if (nodeOrFunction instanceof Function) {
+      return (nodeOrFunction as Function).apply(this, args)
+    } else {
+      return nodeOrFunction as React.ReactNode
+    }
+  }
+}
+
 interface SimpleFormProps {
   _ref: SimpleFormRef
   states: Dictionary<FormState>
@@ -277,10 +287,10 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
               type={ field.subtype }
               placeholder={ field.placeholder }
               maxLength={ inputAddition.maxLength }
-              addonBefore={ inputAddition.addonBefore && inputAddition.addonBefore(props) }
-              addonAfter={ inputAddition.addonAfter && inputAddition.addonAfter(props) }
-              prefix={ inputAddition.prefix && inputAddition.prefix(props) }
-              suffix={ inputAddition.suffix && inputAddition.suffix(props) }
+              addonBefore={ useNodeOrCallFunction(inputAddition.addonBefore, props) }
+              addonAfter={ useNodeOrCallFunction(inputAddition.addonAfter, props) }
+              prefix={ useNodeOrCallFunction(inputAddition.prefix, props) }
+              suffix={ useNodeOrCallFunction(inputAddition.suffix, props) }
               onBlur={ validate }
               { ...extraProps }
             />
@@ -585,10 +595,10 @@ export interface BaseSelectAddition<T = any> extends FormStateAddition {
 
 export interface InputAddition extends FormStateAddition {
   maxLength?: number
-  addonBefore?: FormItemRenderFn
-  addonAfter?: FormItemRenderFn
-  prefix?: FormItemRenderFn
-  suffix?: FormItemRenderFn
+  addonBefore?: string | FormItemRenderFn
+  addonAfter?: string | FormItemRenderFn
+  prefix?: string | FormItemRenderFn
+  suffix?: string | FormItemRenderFn
   multiline?: boolean
 }
 
