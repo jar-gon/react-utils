@@ -271,32 +271,18 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       const InputComponent = field.subtype !== 'password' ? Input : Input.Password
       const extraProps: Dictionary = field.subtype !== 'password' ? { } : { visibilityToggle: (inputAddition as InputPasswordAddition).toggle === true }
       extraProps.disabled = field.disabled()
-      if (!(inputAddition.addonBefore || inputAddition.addonAfter || inputAddition.prefix || inputAddition.suffix)) {
-        return <InputComponent
-          type={ field.subtype }
-          placeholder={ field.placeholder }
-          size={ addition.size }
-          maxLength={ inputAddition.maxLength }
-          onBlur={ validate }
-          { ...extraProps }
-        />
-      } else {
-        return (
-          <Input.Group size={ addition.size }>
-            <InputComponent
-              type={ field.subtype }
-              placeholder={ field.placeholder }
-              maxLength={ inputAddition.maxLength }
-              addonBefore={ useNodeOrCallFunction(inputAddition.addonBefore, props) }
-              addonAfter={ useNodeOrCallFunction(inputAddition.addonAfter, props) }
-              prefix={ useNodeOrCallFunction(inputAddition.prefix, props) }
-              suffix={ useNodeOrCallFunction(inputAddition.suffix, props) }
-              onBlur={ validate }
-              { ...extraProps }
-            />
-          </Input.Group>
-        )
-      }
+      return <InputComponent
+        type={ field.subtype }
+        placeholder={ field.placeholder }
+        size={ addition.size }
+        maxLength={ inputAddition.maxLength }
+        addonBefore={ useNodeOrCallFunction(inputAddition.addonBefore, props) }
+        addonAfter={ useNodeOrCallFunction(inputAddition.addonAfter, props) }
+        prefix={ useNodeOrCallFunction(inputAddition.prefix, props) }
+        suffix={ useNodeOrCallFunction(inputAddition.suffix, props) }
+        onBlur={ validate }
+        { ...extraProps }
+      />
     } else {
       return (
         <Input.TextArea
