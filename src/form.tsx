@@ -145,7 +145,7 @@ export interface FormComponentState {
   loading: boolean
 }
 
-export class FormComponent<P extends OriginFormComponentProps = OriginFormComponentProps, S extends FormComponentState = FormComponentState> extends Component<FormComponentProps & P, S> {
+export class FormComponent<P = { }, S extends FormComponentState = FormComponentState> extends Component<FormComponentProps & P, S> {
   fields: Dictionary<(node: React.ReactNode) => React.ReactNode>
   errors: Dictionary<string[]>
   validFns: Dictionary<() => void>

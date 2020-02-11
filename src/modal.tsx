@@ -271,7 +271,7 @@ export abstract class SimpleFormModalComponent<P = { }, S extends FormComponentS
   }
 }
 
-export class FormModalComponent<P extends FormComponentProps = FormComponentProps, S extends FormComponentState = FormComponentState> extends ModalComponent<P, S> {
+export class FormModalComponent<P = { }, S extends FormComponentState = FormComponentState> extends ModalComponent<FormComponentProps & P, S> {
   fields: Dictionary<(node: React.ReactNode) => React.ReactNode>
   errors: Dictionary<string[]>
   validFns: Dictionary<() => void>
