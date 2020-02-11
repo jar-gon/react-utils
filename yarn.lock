@@ -834,10 +834,10 @@
   resolved "https://registry.yarnpkg.com/@billypon/rxjs-types/-/rxjs-types-0.1.0.tgz#0733107b540f5075e8a623a6cface4c0d93cc460"
   integrity sha512-EOhR7tujtPG1NQ38yrus1GcY2DthJJcm6KbIBPt/BdWffBY0mBV5EGCaeMGQ4syqC31P7+VDhEwtTMU0XW+I0w==
 
-"@billypon/ts-types@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@billypon/ts-types/-/ts-types-0.1.0.tgz#3e7579edd9df0b174e02087cfc2d1e6bb29c48e8"
-  integrity sha512-wJsy7+G4vhyoA2xGOyCYoa0T5GRQSkoklfWON8meJLkmZTEq7L7OgYTS6EAuIVy5pNUUOfqlyXuCgtzNelP13w==
+"@billypon/ts-types@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@billypon/ts-types/-/ts-types-0.1.1.tgz#0ec3c382e388bd58f4bca75af0e2c8efd8348634"
+  integrity sha512-YXqwceQ0KkPRea5oKWp+5uOhsdJrC/xhyBNdMSsq8YpbzHqcBNh7JTy5ZCNs8fNZm833TpHwFoHnWXbc9uWsdA==
 
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"
