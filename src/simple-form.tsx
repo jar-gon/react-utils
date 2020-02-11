@@ -28,12 +28,12 @@ function useNodeOrCallFunction(nodeOrFunction: React.ReactNode | ((...args: unkn
 
 interface SimpleFormProps {
   _ref: SimpleFormRef
-  states: Dictionary<FormState>
+  states: FormStates
   onSubmit: (values: Dictionary) => void
 }
 
 interface SimpleFormState {
-  fields: Dictionary<FormField>
+  fields: FormFields
   hideFields: boolean
 }
 
@@ -81,8 +81,8 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     return fields
   }
 
-  protected initForm(states = this.props.states, prefix = ''): Dictionary<FormField> {
-    const fields: Dictionary<FormField> = { }
+  protected initForm(states = this.props.states, prefix = ''): FormFields {
+    const fields: FormFields = { }
     Object.entries(states).forEach(([ name, state ]: [ string, FormState ]) => {
       const {
         label,
@@ -439,8 +439,10 @@ export interface FormState {
   helpText?: Dictionary<string | ((state: object) => string)>
   extraText?: string | (() => string)
   render?: FormStateItemRender
-  children?: Dictionary<FormState>
+  children?: FormStates
 }
+
+export type FormStates = Dictionary<FormState>
 
 export interface FormField {
   label: string
@@ -455,8 +457,10 @@ export interface FormField {
   render?: FormFieldItemRender
   afterChange?: Subject<any>
   onChange?: (event: React.ChangeEvent<HTMLFormType>) => void
-  children?: Dictionary<FormField>
+  children?: FormFields
 }
+
+export type FormFields = Dictionary<FormField>
 
 export interface FormItemRenderProps {
   name: string

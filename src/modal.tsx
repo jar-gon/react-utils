@@ -14,7 +14,7 @@ import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
 import { FormX, FormComponentProps, FormComponentState } from './form'
-import SimpleForm, { SimpleFormRef, FormState } from './simple-form'
+import SimpleForm, { SimpleFormRef, FormStates } from './simple-form'
 import { ListState, TableX } from './table'
 
 const destroyFns: Function[] = [ ]
@@ -224,7 +224,7 @@ export class ModalComponent<P = { }, S = { }> extends Component<P & { modal: Mod
 
 export abstract class SimpleFormModalComponent<P = { }, S extends FormComponentState = FormComponentState> extends ModalComponent<P, S> {
   form = new SimpleFormRef()
-  states: Dictionary<FormState>
+  states: FormStates
   formProps: FormProps
 
   constructor(props) {
@@ -234,7 +234,7 @@ export abstract class SimpleFormModalComponent<P = { }, S extends FormComponentS
     this.onSubmit = this.onSubmit.bind(this)
   }
 
-  protected abstract getFormStates(): Dictionary<FormState>
+  protected abstract getFormStates(): FormStates
 
   protected getFormProps(): FormProps {
     return null
