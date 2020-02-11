@@ -11,7 +11,7 @@ export class Component<P = { }, S = { }> extends React.Component<WithRouterProps
 
   constructor(props) {
     super(props)
-    this.query = props.router.query as StringDictionary
+    this.query = props.router && props.router.query as StringDictionary
     this.state = this.getInitialState() as S
   }
 
