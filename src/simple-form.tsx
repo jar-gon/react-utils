@@ -220,8 +220,10 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       observable = from(query)
     }
     if (observable) {
-      observable = observable.pipe(map(result => parse ? parse(result) : result as SelectDataOption[]))
-      observable.subscribe(items => {
+      if (parse) {
+        observable = observable.pipe(map(parse))
+      }
+      observable.subscribe((items: SelectDataOption[]) => {
         addition.data = items
         this.triggerUpdate()
       })
