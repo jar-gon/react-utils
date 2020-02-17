@@ -11,7 +11,7 @@ import axios from 'axios-observable'
 import { Observable, Subject, never } from 'rxjs'
 import { map } from 'rxjs/operators'
 import Template from '@billypon/react-template'
-import { Dictionary } from '@billypon/ts-types'
+import { Dictionary, StringDictionary } from '@billypon/ts-types'
 
 import { FormComponent, FormComponentState } from './form'
 import { parseResponse } from './ajax'
@@ -572,8 +572,8 @@ export interface SelectDataOption<T = any> {
 
 export interface SelectDataFrom<T = any> {
   url: string
-  query?: Dictionary<string>
-  param?: Dictionary<string>
+  query?: StringDictionary
+  param?: StringDictionary
   observe?: (observable: Observable<any>) => Observable<T[]>
   parse?: (result?: any) => T[]
 }
