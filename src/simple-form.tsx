@@ -7,6 +7,7 @@ import Input from 'antd/es/input'
 import InputNumber from 'antd/es/input-number'
 import Radio from 'antd/es/radio'
 import Select from 'antd/es/select'
+import { getValueFromEvent } from 'rc-form/es/utils'
 import axios from 'axios-observable'
 import { Observable, Subject, never } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -96,6 +97,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         hidden,
         helpText = { },
         extraText,
+        onChange,
       } = state
       const render = state.render || { } as FormStateItemRender
 
@@ -134,7 +136,16 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         helpText: helpText as Dictionary<(state: object) => string>,
         render: render as FormFieldItemRender,
         afterChange,
-        onChange: (event: React.ChangeEvent<HTMLFormType>) => afterChange.next(event.target.value),
+        onChange: (event: unknown, ...args: unknown[]) => {
+          const value = getValueFromEvent(event)
+          afterChange.next(value)
+          if (onChange) {
+            onChange(value, ...args)
+          }
+          if ([ 'checkbox', 'radio' ].includes(type)) {
+            this.validFns[name]()
+          }
+        },
       }
 
       if (type === 'select') {
@@ -280,6 +291,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         addonAfter={ useNodeOrCallFunction(inputAddition.addonAfter, props) }
         prefix={ useNodeOrCallFunction(inputAddition.prefix, props) }
         suffix={ useNodeOrCallFunction(inputAddition.suffix, props) }
+        onChange={ field.onChange }
         onBlur={ validate }
         { ...extraProps }
       />
@@ -288,6 +300,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         <Input.TextArea
           placeholder={ field.placeholder }
           maxLength={ inputAddition.maxLength }
+          onChange={ field.onChange }
           onBlur={ validate }
         />
       )
@@ -302,6 +315,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         size={ addition.size }
         formatter={ inputNumberAddition.formatter }
         disabled={ field.disabled() }
+        onChange={ field.onChange }
         onBlur={ validate }
       />
     )
@@ -319,6 +333,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         maxTagCount = { selectAddition.maxTagCount }
         maxTagTextLength = { selectAddition.maxTagTextLength }
         disabled={ field.disabled() }
+        onChange={ field.onChange }
         onDropdownVisibleChange={ validate }
       >
         {
@@ -331,13 +346,13 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
   }
 
   protected renderCheckbox(props: FormItemRenderProps): React.ReactNode {
-    const { field, addition, validate } = props
+    const { field, addition } = props
     const checkboxAddition = addition as CheckboxAddition
     if (field.subtype !== 'group') {
       return (
         <Checkbox
           disabled={ field.disabled() }
-          onChange={ validate }
+          onChange={ field.onChange }
         >{ field.placeholder }</Checkbox>
       )
     } else {
@@ -345,21 +360,21 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         <Checkbox.Group
           options={ checkboxAddition.data }
           disabled={ field.disabled() }
-          onChange={ validate }
+          onChange={ field.onChange }
         />
       )
     }
   }
 
   protected renderRadio(props: FormItemRenderProps): React.ReactNode {
-    const { field, addition, validate } = props
+    const { field, addition } = props
     const radioAddition = addition as RadioAddition
     return (
       <Radio.Group
         size={ addition.size }
         options={ field.subtype !== 'button' && radioAddition.data }
         disabled={ field.disabled() }
-        onChange={ validate }
+        onChange={ field.onChange }
       >
         {
           field.subtype == 'button' && radioAddition.data.map(option => {
@@ -378,6 +393,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         format={ datePickerAddition.format }
         showTime={ field.subtype.includes('time') }
         disabled={ field.disabled() }
+        onChange={ field.onChange }
       />
     )
   }
@@ -439,6 +455,7 @@ export interface FormState {
   helpText?: Dictionary<string | ((state: object) => string)>
   extraText?: string | (() => string)
   render?: FormStateItemRender
+  onChange?: (...args: unknown[]) => void
   children?: FormStates
 }
 
@@ -455,8 +472,8 @@ export interface FormField {
   helpText?: Dictionary<(state: object) => string>
   extraText?: () => string
   render?: FormFieldItemRender
+  onChange?: (...args: unknown[]) => void
   afterChange?: Subject<any>
-  onChange?: (event: React.ChangeEvent<HTMLFormType>) => void
   children?: FormFields
 }
 
