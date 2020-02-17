@@ -617,9 +617,13 @@ export interface DatePickerAddition extends FormStateAddition {
   format?: string
 }
 
-export function wrapItemTemplate({ template }: Template) {
+export function wrapItemTemplate(getTemplate: Template | (() => Template)) {
   return (itemProps: FormItemRenderProps): React.ReactNode => {
-    const element = template as React.ReactElement
+    const template = getTemplate instanceof Template ? getTemplate : getTemplate()
+    if (!template) {
+      return ''
+    }
+    const element = template.template as React.ReactElement
     const elementProps = element.props
     const elementRender = (renderProps: { }) => {
       Object.assign(renderProps, {
