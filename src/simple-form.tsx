@@ -488,15 +488,15 @@ export interface FormFieldItemRender {
 export type FormItemRenderFn = (props: FormItemRenderProps) => React.ReactNode
 
 export class SimpleFormRef {
-  _submit: () => void
-  _setFieldsValue: (object: Object, callback?: Function) => void
-  _getFieldValue: (name: string) => any
-  _validateFields: (names?: string[], callback?: Function) => void
-  _resetFields: () => void
-  _setFieldError: (name: string, error: Dictionary) => void
-  _resetFieldError: (name: string) => void
-  _isLoading: () => boolean
-  _setLoading: (loading: boolean) => Observable<void>
+  protected _submit: () => void
+  protected _setFieldsValue: (object: Object, callback?: Function) => void
+  protected _getFieldValue: (name: string) => any
+  protected _validateFields: (names?: string[], callback?: Function) => void
+  protected _resetFields: () => void
+  protected _setFieldError: (name: string, error: Dictionary) => void
+  protected _resetFieldError: (name: string) => void
+  protected _isLoading: () => boolean
+  protected _setLoading: (loading: boolean) => Observable<void>
 
   submit = () => {
     if (this._submit) {
