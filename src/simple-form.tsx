@@ -208,7 +208,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
 
   protected loadSelectData(addition: SelectAddition): void {
     const dataFrom = addition.dataFrom as SelectDataFrom
-    const { query, param, from, observe, parse } = dataFrom
+    const { query, param, from, parse } = dataFrom
     let url: string = dataFrom.url || addition.dataFrom as string
     let observable: Observable<any>
     if (url) {
@@ -220,9 +220,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       observable = from(query)
     }
     if (observable) {
-      if (!observe) {
-        observable = observable.pipe(map(result => parse ? parse(result) : result as SelectDataOption[]))
-      }
+      observable = observable.pipe(map(result => parse ? parse(result) : result as SelectDataOption[]))
       observable.subscribe(items => {
         addition.data = items
         this.triggerUpdate()
@@ -600,7 +598,6 @@ export interface SelectDataFrom<T = any> {
   query?: StringDictionary
   param?: StringDictionary
   from?: (query: StringDictionary, url?: string) => Observable<unknown>
-  observe?: (observable: Observable<unknown>) => Observable<T[]>
   parse?: (result?: unknown) => T[]
 }
 
