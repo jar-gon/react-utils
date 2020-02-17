@@ -150,34 +150,37 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
 
       if (type === 'select') {
         this.setSelectValidFn(prefix + name)
-        const selectAddition: SelectAddition = addition || { }
-        if (selectAddition.dataFrom) {
-          if (typeof selectAddition.dataFrom === 'string') {
-            axios.get(selectAddition.dataFrom).pipe(parseResponse).subscribe((items: SelectDataOption[]) => {
-              selectAddition.data = items
-              this.triggerUpdate()
-            })
-          } else if (selectAddition.dataFrom instanceof Observable) {
-            selectAddition.dataFrom.subscribe(items => {
-              selectAddition.data = items
-              this.triggerUpdate()
-            })
-          } else if ([ 'query', 'param' ].every(x => !selectAddition.dataFrom[x])) {
-            this.loadSelectData(selectAddition)
-          } else {
-            [ 'query', 'param' ].forEach(x => {
-              if (selectAddition.dataFrom[x]) {
-                this.initSelect(selectAddition, x)
-              }
-            })
-          }
-        }
+        this.initSelect(addition)
       }
     })
     return fields
   }
 
-  protected initSelect(addition: SelectAddition, name: string): void {
+  protected initSelect(addition: SelectAddition = { }): void {
+    if (addition.dataFrom) {
+      if (typeof addition.dataFrom === 'string') {
+        axios.get(addition.dataFrom).pipe(parseResponse).subscribe((items: SelectDataOption[]) => {
+          addition.data = items
+          this.triggerUpdate()
+        })
+      } else if (addition.dataFrom instanceof Observable) {
+        addition.dataFrom.subscribe(items => {
+          addition.data = items
+          this.triggerUpdate()
+        })
+      } else if ([ 'query', 'param' ].every(x => !addition.dataFrom[x])) {
+        this.loadSelectData(addition)
+      } else {
+        [ 'query', 'param' ].forEach(x => {
+          if (addition.dataFrom[x]) {
+            setTimeout(() => this.observeSelect(addition, x))
+          }
+        })
+      }
+    }
+  }
+
+  protected observeSelect(addition: SelectAddition, name: string): void {
     const { getFieldValue } = this.props.form
     const params = addition.dataFrom[name]
     let load: boolean = true
@@ -205,15 +208,20 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
 
   protected loadSelectData(addition: SelectAddition): void {
     const dataFrom = addition.dataFrom as SelectDataFrom
-    const { query, param, observe, parse } = dataFrom
+    const { query, param, from, observe, parse } = dataFrom
     let url: string = dataFrom.url || addition.dataFrom as string
+    let observable: Observable<any>
     if (url) {
       if (param) {
         Object.keys(param).forEach(x => url = url.replace(':' + x, param[x]))
       }
-      let observable = axios.get(url, { params: query }).pipe(parseResponse)
+      observable = from ? from(query, url) : axios.get(url, { params: query }).pipe(parseResponse)
+    } else if (from) {
+      observable = from(query)
+    }
+    if (observable) {
       if (!observe) {
-        observable = observable.pipe(map((result: any) => parse ? parse(result) : result as SelectDataOption[]))
+        observable = observable.pipe(map(result => parse ? parse(result) : result as SelectDataOption[]))
       }
       observable.subscribe(items => {
         addition.data = items
@@ -588,11 +596,12 @@ export interface SelectDataOption<T = any> {
 }
 
 export interface SelectDataFrom<T = any> {
-  url: string
+  url?: string
   query?: StringDictionary
   param?: StringDictionary
-  observe?: (observable: Observable<any>) => Observable<T[]>
-  parse?: (result?: any) => T[]
+  from?: (query: StringDictionary, url?: string) => Observable<unknown>
+  observe?: (observable: Observable<unknown>) => Observable<T[]>
+  parse?: (result?: unknown) => T[]
 }
 
 export interface BaseSelectAddition<T = any> extends FormStateAddition {
