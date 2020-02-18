@@ -142,9 +142,6 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
           if (onChange) {
             onChange(value, ...args)
           }
-          if ([ 'checkbox', 'radio' ].includes(type)) {
-            this.validFns[name]()
-          }
         },
       }
 
