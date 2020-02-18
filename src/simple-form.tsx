@@ -589,7 +589,6 @@ export interface FormStateAddition {
   decorator?: boolean
 }
 
-
 export interface SelectDataOption<T = any> {
   label: string
   value: T
