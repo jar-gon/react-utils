@@ -148,15 +148,25 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         },
       }
 
-      if (type === 'select') {
-        this.setSelectValidFn(prefix + name)
-        this.initSelect(addition)
+      switch (type) {
+        case 'select':
+          this.setSelectValidFn(prefix + name)
+          this.initSelect(addition)
+          break
+        case 'checkbox':
+          if (subtype === 'group') {
+            this.initSelect(addition)
+          }
+          break
+        case 'radio':
+          this.initSelect(addition)
+          break
       }
     })
     return fields
   }
 
-  protected initSelect(addition: SelectAddition = { }): void {
+  protected initSelect(addition: BaseSelectAddition = { }): void {
     if (addition.dataFrom) {
       if (typeof addition.dataFrom === 'string') {
         axios.get(addition.dataFrom).pipe(parseResponse).subscribe((items: SelectDataOption[]) => {
@@ -180,7 +190,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     }
   }
 
-  protected observeSelect(addition: SelectAddition, name: string): void {
+  protected observeSelect(addition: BaseSelectAddition, name: string): void {
     const { getFieldValue } = this.props.form
     const params = addition.dataFrom[name]
     let load: boolean = true
@@ -206,7 +216,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     }
   }
 
-  protected loadSelectData(addition: SelectAddition): void {
+  protected loadSelectData(addition: BaseSelectAddition): void {
     const dataFrom = addition.dataFrom as SelectDataFrom
     const { query, param, from, parse } = dataFrom
     let url: string = dataFrom.url || addition.dataFrom as string
