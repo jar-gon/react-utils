@@ -108,7 +108,10 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
 
       addition.label = addition.label !== undefined ? addition.label : true
       addition.class = addition.class || { }
-      ;[ 'item', 'label', 'control' ].forEach(x => addition.class[x] = addition.class[x] || '')
+      ;[ 'item', 'label', 'control' ].forEach(x => {
+        const className = addition.class[x]
+        addition.class[x] = (!Array.isArray(className) ? className as string : (className as string[]).join(' ')) || ''
+      })
       Object.keys(helpText).forEach(x => {
         helpText[x] = typeof helpText[x] === 'function' ? helpText[x] : () => helpText[x] as string
       })
@@ -252,7 +255,12 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     if (hideFields && hidden()) {
       return null
     }
-    return <FormItem key={ name } name={ name } label={ field.label } help={ render.help } extra={ renderExtra } decorator={ addition.decorator }>{ field.render.control(props) }</FormItem>
+    const label: React.ReactNode = !addition.class.label ? field.label : <div className={ addition.class.label as string }>{ field.label }</div>
+    let control = field.render.control(props)
+    if (addition.class.control) {
+      control = <div className={ addition.class.control as string }>{ control }</div>
+    }
+    return <FormItem key={ name } name={ name } label={ label } help={ render.help } extra={ renderExtra } className={ addition.class.item as string } decorator={ addition.decorator }>{ control }</FormItem>
   }
 
   protected renderField(props: FormItemRenderProps): React.ReactNode {
@@ -589,9 +597,9 @@ export interface FormStateAddition {
   label?: boolean
   validateFirst?: boolean
   class?: {
-    item?: string
-    label?: string
-    control?: string
+    item?: string | string[]
+    label?: string | string[]
+    control?: string | string[]
   }
   decorator?: boolean
 }
