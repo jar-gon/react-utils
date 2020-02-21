@@ -338,6 +338,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         size={ addition.size }
         min={ inputNumberAddition.min }
         max={ inputNumberAddition.max }
+        step={ inputNumberAddition.step }
         formatter={ inputNumberAddition.formatter }
         parser={ inputNumberAddition.parser }
         disabled={ field.disabled() }
@@ -641,6 +642,7 @@ export interface InputPasswordAddition extends InputAddition {
 export interface InputNumberAddition extends FormStateAddition {
   min?: number
   max?: number
+  step?: number | string
   formatter?: (value: number | string) => string
   parser?: (value: string) => number
 }
