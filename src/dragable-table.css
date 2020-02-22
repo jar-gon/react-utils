@@ -1,0 +1,7 @@
+.ant-table tr.drop-over-downward td {
+  border-bottom: dashed 2px #1890ff;
+}
+
+.ant-table tr.drop-over-upward td {
+  border-top: dashed 2px #1890ff;
+}

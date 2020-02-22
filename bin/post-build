@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 
+const fs = require('fs');
+
+process.chdir(__dirname + '/..');
+
 var package = require('../package.json');
 delete package.scripts;
 delete package.devDependencies;
-require('fs').writeFileSync(__dirname + '/../dist/package.json', JSON.stringify(package, null, 2));
+fs.writeFileSync('dist/package.json', JSON.stringify(package, null, 2));
+
+fs.copyFileSync('src/dragable-table.css', 'dist/dragable-table.css');

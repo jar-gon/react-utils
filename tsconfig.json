@@ -25,6 +25,7 @@
     "src/captcha/aliyun.ts",
     "src/common.ts",
     "src/config.ts",
+    "src/dragable-table.tsx",
     "src/form.tsx",
     "src/form/validators",
     "src/modal.tsx",
