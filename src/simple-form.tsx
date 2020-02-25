@@ -405,7 +405,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       >
         {
           field.subtype == 'button' && radioAddition.data.map(option => {
-            return <Radio.Button key={ option.value } value={ option.value }>{ option.label }</Radio.Button>
+            return <Radio.Button key={ option.value } value={ option.value } disabled={ option.disabled }>{ option.label }</Radio.Button>
           })
         }
       </Radio.Group>
@@ -611,6 +611,7 @@ export interface FormStateAddition {
 export interface SelectDataOption<T = any> {
   label: string
   value: T
+  disabled?: boolean
 }
 
 export interface SelectDataFrom<T = any> {
