@@ -309,7 +309,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         type={ field.subtype }
         placeholder={ field.placeholder }
         size={ addition.size }
-        maxLength={ inputAddition.maxLength }
+        maxLength={ inputAddition.maxlength }
         addonBefore={ useNodeOrCallFunction(inputAddition.addonBefore, props) }
         addonAfter={ useNodeOrCallFunction(inputAddition.addonAfter, props) }
         prefix={ useNodeOrCallFunction(inputAddition.prefix, props) }
@@ -322,7 +322,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       return (
         <Input.TextArea
           placeholder={ field.placeholder }
-          maxLength={ inputAddition.maxLength }
+          maxLength={ inputAddition.maxlength }
           onChange={ field.onChange }
           onBlur={ validate }
         />
@@ -628,7 +628,7 @@ export interface BaseSelectAddition<T = any> extends FormStateAddition {
 }
 
 export interface InputAddition extends FormStateAddition {
-  maxLength?: number
+  maxlength?: number
   addonBefore?: string | FormItemRenderFn
   addonAfter?: string | FormItemRenderFn
   prefix?: string | FormItemRenderFn
