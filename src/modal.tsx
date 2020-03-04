@@ -278,6 +278,8 @@ export class FormModalComponent<P = { }, S extends FormComponentState = FormComp
 
   submitForm: () => void
   protected getItemHelp: (name: string) => React.ReactNode
+  protected updateFieldsStatus: (err: unknown) => void
+  protected setErrors: (name: string, errors: Dictionary) => void
   protected setSelectValidFn: (...fields: string[]) => void
 
   constructor(props) {

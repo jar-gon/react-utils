@@ -78,11 +78,9 @@ export class FormX {
       event.preventDefault()
     }
     this.form.validateFields({ force: true }, (err, values) => {
+      this.updateFieldsStatus(err)
       if (!err) {
-        Object.keys(this.fields).forEach(name => this.errors[name] = null)
         this.submitCallback(values)
-      } else {
-        Object.keys(this.fields).forEach(name => this.setErrors(name, err))
       }
     })
   }
@@ -90,6 +88,14 @@ export class FormX {
   private getItemHelp = (name: string): React.ReactNode => {
     const errors = this.errors[name]
     return errors && errors[0]
+  }
+
+  private updateFieldsStatus = (err: unknown) => {
+    if (!err) {
+      Object.keys(this.fields).forEach(name => this.errors[name] = null)
+    } else {
+      Object.keys(this.fields).forEach(name => this.setErrors(name, err))
+    }
   }
 
   private setErrors = (name: string, errors: Dictionary) => {
@@ -129,7 +135,7 @@ export class FormX {
       }
     })
     if (context) {
-      [ 'fields', 'errors', 'validFns', 'submitForm', 'getItemHelp', 'setErrors', 'setSelectValidFn', 'FormX', 'FormItem', 'FormField' ].forEach(x => context[x] = this[x])
+      [ 'fields', 'errors', 'validFns', 'submitForm', 'getItemHelp', 'updateFieldsStatus', 'setErrors', 'setSelectValidFn', 'FormX', 'FormItem', 'FormField' ].forEach(x => context[x] = this[x])
       Object.assign(context, {
         FragmentWrap,
         SpinWrap,
@@ -153,6 +159,7 @@ export class FormComponent<P = { }, S extends FormComponentState = FormComponent
 
   submitForm: (event?: React.SyntheticEvent<HTMLElement>) => void
   protected getItemHelp: (name: string) => React.ReactNode
+  protected updateFieldsStatus: (err: unknown) => void
   protected setErrors: (name: string, errors: Dictionary) => void
   protected setSelectValidFn: (...fields: string[]) => void
 
