@@ -256,9 +256,17 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       return null
     }
     const label: React.ReactNode = !addition.class.label ? field.label : <div className={ addition.class.label as string }>{ field.label }</div>
-    let control = field.render.control(props)
+    let control = field.render.control(props) as React.ReactElement
     if (addition.class.control) {
-      control = <div className={ addition.class.control as string }>{ control }</div>
+      const controlClass = addition.class.control as string
+      const controlProps = control.props
+      control = {
+        ...control,
+        props: {
+          ...controlProps,
+          className: controlProps.className ? `${ controlProps.className } ${ controlClass }` : controlClass,
+        },
+      }
     }
     return <FormItem key={ name } name={ name } label={ label } help={ render.help } extra={ renderExtra } className={ addition.class.item as string } decorator={ addition.decorator }>{ control }</FormItem>
   }
