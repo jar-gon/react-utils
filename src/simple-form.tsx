@@ -361,6 +361,19 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
   protected renderSelect(props: FormItemRenderProps): React.ReactNode {
     const { field, addition, validate } = props
     const selectAddition = addition as SelectAddition
+    let getPopupContainer: (triggerNode: HTMLElement) => HTMLElement
+    if (selectAddition.getPopupContainer) {
+      switch (selectAddition.getPopupContainer) {
+        case 'body':
+          break // use default
+        case 'parent':
+          getPopupContainer = (triggerNode) => triggerNode.parentElement
+          break
+        default:
+          getPopupContainer = selectAddition.getPopupContainer as (triggerNode: HTMLElement) => HTMLElement
+          break
+      }
+    }
     return (
       <Select
         placeholder={ field.placeholder }
@@ -370,6 +383,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         maxTagCount = { selectAddition.maxTagCount }
         maxTagTextLength = { selectAddition.maxTagTextLength }
         disabled={ field.disabled() }
+        getPopupContainer={ getPopupContainer }
         onChange={ field.onChange }
         onDropdownVisibleChange={ validate }
       >
@@ -664,6 +678,7 @@ export interface SelectAddition<T = any> extends BaseSelectAddition {
   mode?: 'multiple' | 'tags'
   maxTagCount?: number
   maxTagTextLength?: number
+  getPopupContainer?: 'body' | 'parent' | ((triggerNode: HTMLElement) => HTMLElement)
 }
 
 export interface CheckboxAddition<T = any> extends BaseSelectAddition {
