@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import Table, { TableProps, ColumnProps } from 'antd/es/table'
 import { PaginationProps } from 'antd/es/pagination'
 import { Observable } from 'rxjs'
+import { isFragment } from 'react-is'
 import { Dictionary } from '@billypon/ts-types'
 
 import { Component } from './react'
@@ -21,18 +22,25 @@ interface TableXColumnProps extends ColumnProps<any> {
 }
 
 export function TableX(props: TableProps<any>) {
-  const children = (props.children as React.ReactElement<ColumnProps<any>>[]).map(element => {
+  let columns = props.children as ReactElement[]
+  if (!Array.isArray(columns)) {
+    columns = [ columns as ReactElement ]
+  }
+  columns = (columns.map(x => !isFragment(x) ? x : (x as ReactElement).props.children) as any)
+    .flat()
+    .filter(Boolean)
+  const children = (columns as ReactElement<ColumnProps<any>>[]).map(element => {
     const elementProps = { ...element.props }
     return { ...element, props: elementProps }
   })
-  const columns = (props.columns || children.map(element => element.props)) as TableXColumnProps[]
-  if (columns.length) {
+  const columnProps = (props.columns || children.map(element => element.props)) as TableXColumnProps[]
+  if (columnProps.length) {
     const cells: RenderedCell[] = [ ]
     Object.entries(props).filter(([ key ]) => key.startsWith('column-')).forEach(([ key, value ]) => {
       const [ _, indexOrKey, prop ] = key.split('-')
       let columnIndex = parseInt(indexOrKey, 10)
-      columnIndex = !Number.isNaN(columnIndex) ? columnIndex : columns.findIndex((column) => column.key === indexOrKey)
-      const column = columns[columnIndex]
+      columnIndex = !Number.isNaN(columnIndex) ? columnIndex : columnProps.findIndex((column) => column.key === indexOrKey)
+      const column = columnProps[columnIndex]
       if (column) {
         let cell = cells[columnIndex]
         if (!cell) {
@@ -54,7 +62,7 @@ export function TableX(props: TableProps<any>) {
         }
       }
     })
-    columns.filter((column, index) => column.renderProps && !cells[index]).forEach(column => {
+    columnProps.filter((column, index) => column.renderProps && !cells[index]).forEach(column => {
       const columnRender = (column.render || { }) as RenderedCell
       const render = columnRender.children || columnRender
       column.render = (text, record, index) => ({

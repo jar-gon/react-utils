@@ -15,6 +15,7 @@
     "@types/qs": "6.5.3",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.3",
+    "@types/react-is": "16.7.1",
     "antd": "3.24.3",
     "axios": "0.19.0",
     "axios-observable": "1.1.2",
@@ -25,6 +26,7 @@
     "react-dnd": "10.0.2",
     "react-dnd-html5-backend": "10.0.2",
     "react-dom": "16.11.0",
+    "react-is": "16.13.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "6.5.3",
     "tslint": "5.20.0",
@@ -34,6 +36,7 @@
     "@billypon/react-template": "*",
     "@billypon/rxjs-types": "*",
     "@billypon/ts-types": "*",
+    "@types/react-is": "*",
     "antd": "*",
     "axios": "*",
     "axios-observable": "*",
@@ -44,6 +47,7 @@
     "react-dnd": "*",
     "react-dnd-html5-backend": "*",
     "react-dom": "*",
+    "react-is": "*",
     "reflect-metadata": "*",
     "rxjs": "*"
   }
