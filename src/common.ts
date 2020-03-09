@@ -49,3 +49,7 @@ export function redirectToLogout(current?: string): void {
 export function replaceToLogout(current?: string): void {
   router.replace(getLogoutUrl(current))
 }
+
+export function getParentNode(triggerNode: HTMLElement): HTMLElement {
+  return triggerNode.parentNode as HTMLElement
+}

@@ -16,6 +16,7 @@ import { Dictionary, StringDictionary } from '@billypon/ts-types'
 
 import { FormComponent, FormComponentState } from './form'
 import { parseResponse } from './ajax'
+import { getParentNode } from './common'
 
 function useNodeOrCallFunction(nodeOrFunction: React.ReactNode | ((...args: unknown[]) => React.ReactNode), ...args: unknown[]): React.ReactNode {
   if (nodeOrFunction) {
@@ -367,7 +368,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         case 'body':
           break // use default
         case 'parent':
-          getPopupContainer = (triggerNode) => triggerNode.parentElement
+          getPopupContainer = getParentNode
           break
         default:
           getPopupContainer = selectAddition.getPopupContainer as (triggerNode: HTMLElement) => HTMLElement
