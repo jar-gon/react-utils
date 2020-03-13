@@ -429,7 +429,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         onChange={ field.onChange }
       >
         {
-          field.subtype == 'button' && radioAddition.data.map(option => {
+          field.subtype == 'button' && radioAddition.data && radioAddition.data.map(option => {
             return <Radio.Button key={ option.value } value={ option.value } disabled={ option.disabled }>{ option.label }</Radio.Button>
           })
         }
