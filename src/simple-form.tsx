@@ -286,7 +286,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         render = this.renderInputNumber
         break
       case 'select':
-        render = this.renderSelect
+        render = this.renderSelect.bind(this)
         break
       case 'checkbox':
         render = this.renderCheckbox
@@ -360,7 +360,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
   }
 
   protected renderSelect(props: FormItemRenderProps): React.ReactNode {
-    const { field, addition, validate } = props
+    const { name, field, addition } = props
     const selectAddition = addition as SelectAddition
     let getPopupContainer: (triggerNode: HTMLElement) => HTMLElement
     if (selectAddition.getPopupContainer) {
@@ -375,6 +375,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
           break
       }
     }
+    const validate = this.validFns[`${ name }_dropdown`]
     return (
       <Select
         placeholder={ field.placeholder }
