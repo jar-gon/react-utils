@@ -495,11 +495,13 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
 
 export default Form.create({ name: 'simple-form' })(SimpleForm) as any
 
+export type FormStateType = 'text' | 'input' | 'input-number' | 'select' | 'checkbox' | 'radio' | 'datetime' | string
+
 export interface FormState {
   label: string
   value?: any
   placeholder?: string
-  type?: string
+  type?: FormStateType
   subtype?: string
   rules?: ValidationRule[]
   addition?: FormStateAddition
@@ -517,7 +519,7 @@ export type FormStates = Dictionary<FormState>
 export interface FormField {
   label: string
   placeholder?: string
-  type?: string
+  type?: FormStateType
   subtype?: string
   addition?: FormStateAddition
   disabled?: () => boolean
