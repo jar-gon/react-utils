@@ -7,6 +7,7 @@ import Input from 'antd/es/input'
 import InputNumber from 'antd/es/input-number'
 import Radio from 'antd/es/radio'
 import Select from 'antd/es/select'
+import Switch from 'antd/es/switch'
 import { getValueFromEvent } from 'rc-form/es/utils'
 import axios from 'axios-observable'
 import { Observable, Subject, never } from 'rxjs'
@@ -294,6 +295,9 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       case 'radio':
         render = this.renderRadio
         break
+      case 'switch':
+        render = this.renderSwitch
+        break
       case 'datetime':
         render = this.renderDatetime
         break
@@ -438,6 +442,17 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     )
   }
 
+  protected renderSwitch(props: FormItemRenderProps): React.ReactNode {
+    const { field, addition } = props
+    return (
+      <Switch
+        size={ addition.size !== 'large' ? addition.size : 'default' }
+        disabled={ field.disabled() }
+        onChange={ field.onChange }
+      />
+    )
+  }
+
   protected renderDatetime(props: FormItemRenderProps): React.ReactNode {
     const { field, addition } = props
     const datePickerAddition = addition as DatePickerAddition
@@ -495,7 +510,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
 
 export default Form.create({ name: 'simple-form' })(SimpleForm) as any
 
-export type FormStateType = 'text' | 'input' | 'input-number' | 'select' | 'checkbox' | 'radio' | 'datetime' | string
+export type FormStateType = 'text' | 'input' | 'input-number' | 'select' | 'checkbox' | 'radio' | 'switch' | 'datetime' | string
 
 export interface FormState {
   label: string
