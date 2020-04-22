@@ -90,9 +90,9 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
       const {
         label,
         value,
-        placeholder,
         type,
         subtype,
+        placeholder,
         rules,
         addition = { },
         disabled,
@@ -131,9 +131,9 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
 
       fields[name] = {
         label: !addition.label ? '' : type !== 'checkbox' || subtype === 'group' ? label : ' ',
-        placeholder: placeholder === undefined ? label : (placeholder || ''),
         type: type || 'input',
         subtype: subtype || 'text',
+        placeholder: placeholder === undefined ? label : (placeholder || ''),
         addition,
         disabled: typeof disabled === 'function' ? disabled : () => disabled,
         hidden: typeof hidden === 'function' ? hidden : () => hidden,
@@ -515,9 +515,9 @@ export type FormStateType = 'text' | 'input' | 'input-number' | 'select' | 'chec
 export interface FormState {
   label: string
   value?: any
-  placeholder?: string
   type?: FormStateType
   subtype?: string
+  placeholder?: string
   rules?: ValidationRule[]
   addition?: FormStateAddition
   disabled?: boolean | (() => boolean)
@@ -533,9 +533,9 @@ export type FormStates = Dictionary<FormState>
 
 export interface FormField {
   label: string
-  placeholder?: string
   type?: FormStateType
   subtype?: string
+  placeholder?: string
   addition?: FormStateAddition
   disabled?: () => boolean
   hidden?: () => boolean
