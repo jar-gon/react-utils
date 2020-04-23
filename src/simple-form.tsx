@@ -74,8 +74,14 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
           validateFirst: true,
           preserve: true,
         }
-        if (state.type === 'checkbox' && state.subtype !== 'group') {
-          fields[prefix + name].valuePropName = 'checked'
+        let valuePropName: string
+        if (state.type === 'switch') {
+          valuePropName = 'checked'
+        } else if (state.type === 'checkbox' && state.subtype !== 'group') {
+          valuePropName = 'checked'
+        }
+        if (valuePropName) {
+          fields[prefix + name].valuePropName = valuePropName
         }
       } else {
         Object.assign(fields, this.getFormFields(state.children, `${ name }.`))
