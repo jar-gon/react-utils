@@ -29,6 +29,23 @@ function useNodeOrCallFunction(nodeOrFunction: React.ReactNode | ((...args: unkn
   }
 }
 
+interface RenderTextProps {
+  value?: unknown
+  placeholder?: string
+  html?: boolean
+}
+
+class RenderText extends React.Component<RenderTextProps> {
+  render() {
+    const { value, placeholder, html } = this.props
+    return [ undefined, null ].includes(value)
+      ? <span className="ant-form-text-placeholder">{ placeholder }</span>
+      : !html
+        ? <span className="ant-form-text">{ value }</span>
+        : <span className="ant-form-text" dangerouslySetInnerHTML={{ __html: value.toString() }}></span>
+  }
+}
+
 interface SimpleFormProps {
   _ref: SimpleFormRef
   states: FormStates
@@ -284,7 +301,7 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     let render: (props: FormItemRenderProps) => React.ReactNode
     switch (field.type) {
       case 'text':
-        render = this.renderStatic
+        render = this.renderText
         break
       case 'input':
         render = this.renderInput
@@ -311,10 +328,9 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
     return render && render(props)
   }
 
-  protected renderStatic({ value, field }: FormItemRenderProps): React.ReactNode {
-    return value
-      ? <span className="ant-form-text">{ value }</span>
-      : <span className="ant-form-text-placeholder">{ field.placeholder }</span>
+  protected renderText({ field, addition }: FormItemRenderProps): React.ReactNode {
+    const textAddition = addition as TextAddition
+    return <RenderText placeholder={ field.placeholder } html={ textAddition.html } />
   }
 
   protected renderInput(props: FormItemRenderProps): React.ReactNode {
@@ -674,6 +690,10 @@ export interface SelectDataFrom<T = any> {
 export interface BaseSelectAddition<T = any> extends FormStateAddition {
   data?: SelectDataOption<T>[]
   dataFrom?: string | Observable<SelectDataOption<T>[]> | SelectDataFrom
+}
+
+export interface TextAddition extends FormStateAddition {
+  html?: boolean
 }
 
 export interface InputAddition extends FormStateAddition {
