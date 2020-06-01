@@ -60,13 +60,14 @@ interface SimpleFormState {
 export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormProps, FormComponentState & SimpleFormState> {
   constructor(props) {
     super(props)
-    const { setFieldsValue, getFieldValue, validateFields, resetFields } = props.form
+    const { setFieldsValue, getFieldValue, getFieldsValue, validateFields, resetFields } = props.form
     Object.assign(this.state, { fields: this.initForm() })
     if (props._ref) {
       Object.assign(props._ref, {
         _submit: this.submitForm,
         _setFieldsValue: setFieldsValue,
         _getFieldValue: getFieldValue,
+        _getFieldsValue: getFieldsValue,
         _validateFields: validateFields,
         _resetFields: resetFields,
         _setFieldError: this.setErrors,
@@ -600,6 +601,7 @@ export class SimpleFormRef {
   protected _submit: () => void
   protected _setFieldsValue: (object: Object, callback?: Function) => void
   protected _getFieldValue: (name: string) => any
+  protected _getFieldsValue: () => any
   protected _validateFields: (names?: string[], callback?: Function) => void
   protected _resetFields: () => void
   protected _setFieldError: (name: string, error: Dictionary) => void
@@ -621,6 +623,10 @@ export class SimpleFormRef {
 
   getFieldValue = (name: string) => {
     return this._getFieldValue && this._getFieldValue(name)
+  }
+
+  getFieldsValue = () => {
+    return this._getFieldsValue && this._getFieldsValue()
   }
 
   validateFields = (names?: string[], callback?: Function) => {
