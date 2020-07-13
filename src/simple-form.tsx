@@ -408,6 +408,8 @@ export class SimpleForm extends FormComponent<FormComponentProps & SimpleFormPro
         placeholder={ field.placeholder }
         size={ addition.size }
         allowClear={ selectAddition.allowClear }
+        showSearch={ selectAddition.showSearch }
+        optionFilterProp={ selectAddition.optionFilterProp }
         mode={ selectAddition.mode }
         maxTagCount = { selectAddition.maxTagCount }
         maxTagTextLength = { selectAddition.maxTagTextLength }
@@ -726,6 +728,8 @@ export interface InputNumberAddition extends FormStateAddition {
 
 export interface SelectAddition<T = any> extends BaseSelectAddition {
   allowClear?: boolean
+  showSearch?: boolean
+  optionFilterProp?: 'value' | 'children'
   mode?: 'multiple' | 'tags'
   maxTagCount?: number
   maxTagTextLength?: number
