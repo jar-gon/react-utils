@@ -37,8 +37,10 @@ export default class ModalX<T = any> {
   private container: HTMLElement
   private createdContainer: HTMLElement
 
+  cancelUpdate: boolean = false
+
   afterClose: Subject<T> = new Subject<T>()
-  afterCancel: Subject<void> = new Subject<void>()
+  afterCancel: Subject<boolean> = new Subject<boolean>()
 
   constructor(public props: ModalXProps) {
     destroyFns.push(this.destroy)
@@ -101,7 +103,7 @@ export default class ModalX<T = any> {
 
   cancel(): void {
     this.destroy()
-    this.afterCancel.next()
+    this.afterCancel.next(this.cancelUpdate)
   }
 
   private destroy(): void {
